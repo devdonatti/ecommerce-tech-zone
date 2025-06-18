@@ -5,7 +5,6 @@ import toast from "react-hot-toast";
 import axios from "axios";
 import { initMercadoPago } from "@mercadopago/sdk-react";
 
-// Inicializa MercadoPago solo una vez
 initMercadoPago("APP_USR-4bbcc18f-f704-4ab9-bc2a-fa53ba90cc66");
 
 const BuyNowModal = ({ addressInfo, setAddressInfo, buyNowFunction }) => {
@@ -23,11 +22,11 @@ const BuyNowModal = ({ addressInfo, setAddressInfo, buyNowFunction }) => {
   const createPreference = async () => {
     try {
       const items = cartItems.map((item) => ({
-        title: `${item.title} x${item.quantity}`,
+        title: item.title,
         quantity: Number(item.quantity),
-        unit_price: Number(item.price),
+        price: Number(item.price),
         description: item.description,
-        picture_url: item.productImageUrl,
+        productImageUrl: item.productImageUrl,
       }));
 
       const response = await axios.post(
@@ -39,7 +38,7 @@ const BuyNowModal = ({ addressInfo, setAddressInfo, buyNowFunction }) => {
 
       if (id && init_point) {
         console.log("Preferencia creada correctamente:", id);
-        window.location.href = init_point; // Redirige a MercadoPago
+        window.location.href = init_point;
       } else {
         throw new Error("No se recibió un ID de preferencia válido");
       }
@@ -122,8 +121,8 @@ const BuyNowModal = ({ addressInfo, setAddressInfo, buyNowFunction }) => {
               if (!isFormValid) {
                 return toast.error("Completa todos los campos");
               }
-              handleOpen(); // Cerrar el modal
-              buyNowFunction(createPreference); // Pasa la función a buyNowFunction
+              handleOpen();
+              buyNowFunction(createPreference);
             }}
             disabled={!isFormValid}
             className={`w-full px-4 py-3 text-center text-gray-100 ${

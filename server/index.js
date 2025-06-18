@@ -6,14 +6,12 @@ dotenv.config();
 
 console.log("Token MercadoPago:", process.env.MERCADOPAGO_ACCESS_TOKEN);
 
-// Configurar cliente de Mercado Pago
 const client = new MercadoPagoConfig({
   accessToken: process.env.MERCADOPAGO_ACCESS_TOKEN,
 });
 
 const app = express();
 
-// Configurar CORS
 app.use(
   cors({
     origin: [
@@ -30,12 +28,10 @@ app.use(
 
 app.use(express.json());
 
-// Ruta base
 app.get("/", (req, res) => {
   res.send("Soy el server :)");
 });
 
-// Crear preferencia desde carrito
 app.post("/api/create_preference_cart", async (req, res) => {
   console.log("Datos recibidos en /create_preference_cart:", req.body);
   try {
@@ -51,14 +47,19 @@ app.post("/api/create_preference_cart", async (req, res) => {
       const quantity = Number(item.quantity);
       const unit_price = Number(item.price);
 
-      if (isNaN(quantity) || isNaN(unit_price)) {
-        throw new Error("Cantidad o precio inválidos");
+      if (isNaN(quantity) || quantity <= 0) {
+        throw new Error(`Cantidad inválida para el producto: ${item.title}`);
+      }
+      if (isNaN(unit_price) || unit_price <= 0) {
+        throw new Error(`Precio inválido para el producto: ${item.title}`);
       }
 
       return {
-        title: `${item.title} x${quantity}`, // Muestra el título con la cantidad
-        quantity: 1, // Para que MP lo muestre como un ítem
-        unit_price: quantity * unit_price, // Precio total de ese producto
+        title: item.title,
+        quantity: quantity,
+        unit_price: unit_price,
+        description: item.description || "",
+        picture_url: item.productImageUrl || "",
       };
     });
 
@@ -70,8 +71,8 @@ app.post("/api/create_preference_cart", async (req, res) => {
         pending: "https://ecommerce-tech-zone.vercel.app",
       },
       auto_return: "approved",
-      notification_url: "https://ecommerce-tech-zone.vercel.app/notificaciones", // opcional
-      statement_descriptor: "SMILE SHOP", // nombre corto que aparece en el resumen de tarjeta
+      notification_url: "https://ecommerce-tech-zone.vercel.app/notificaciones",
+      statement_descriptor: "SMILE SHOP",
     };
 
     const preference = new Preference(client);
@@ -97,7 +98,6 @@ app.post("/api/create_preference_cart", async (req, res) => {
   }
 });
 
-// Vercel: evitar iniciar servidor en producción
 if (process.env.NODE_ENV !== "production") {
   app.listen(3000, () => {
     console.log("Servidor local corriendo en el puerto 3000");

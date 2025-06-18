@@ -24,20 +24,18 @@ const CartPage = () => {
   const [preferenceIdcart, setPreferenceIdcart] = useState(null);
   const [shippingCost, setShippingCost] = useState(0);
 
-  // Sincronizar carrito con localStorage
   useEffect(() => {
     localStorage.setItem("cart", JSON.stringify(cartItems));
   }, [cartItems]);
 
-  // Crear preferencia
   const createPreference = async () => {
     try {
       const items = cartItems.map((item) => ({
-        title: `${item.title} x${item.quantity}`,
+        title: item.title,
         quantity: Number(item.quantity),
-        unit_price: Number(item.price), // ✅ Campo correcto para MercadoPago
+        price: Number(item.price),
         description: item.description,
-        picture_url: item.productImageUrl, // ✅ Si querés mostrar la imagen
+        productImageUrl: item.productImageUrl,
       }));
 
       const response = await axios.post(
@@ -60,7 +58,6 @@ const CartPage = () => {
     }
   }, [preferenceIdcart]);
 
-  // Usuario y dirección
   const user = JSON.parse(localStorage.getItem("users"));
   const [addressInfo, setAddressInfo] = useState({
     name: "",
@@ -75,7 +72,6 @@ const CartPage = () => {
     }),
   });
 
-  // Confirmar compra
   const buyNowFunction = async () => {
     if (
       !addressInfo.name ||
@@ -110,7 +106,6 @@ const CartPage = () => {
     }
   };
 
-  // Cálculos de totales
   const cartItemTotal = cartItems.reduce(
     (total, item) => total + item.quantity,
     0
@@ -120,9 +115,8 @@ const CartPage = () => {
     0
   );
 
-  // Manejo de cantidad
   const handleQuantityChange = (e, id) => {
-    dispatch(updateQuantity({ id, quantity: e.target.value }));
+    dispatch(updateQuantity({ id, quantity: Number(e.target.value) }));
   };
 
   return (
@@ -134,7 +128,6 @@ const CartPage = () => {
           </h1>
 
           <form className="mt-12 lg:grid lg:grid-cols-12 lg:items-start lg:gap-x-12 xl:gap-x-16">
-            {/* Productos */}
             <section className="rounded-lg bg-white lg:col-span-8">
               <ul className="divide-y divide-gray-200">
                 {cartItems.length > 0 ? (
@@ -177,6 +170,7 @@ const CartPage = () => {
                             type="number"
                             className="mx-1 h-7 w-9 rounded-md border text-center"
                             value={item.quantity}
+                            min={1}
                             onChange={(e) => handleQuantityChange(e, item.id)}
                           />
                           <button
@@ -208,7 +202,6 @@ const CartPage = () => {
               </ul>
             </section>
 
-            {/* Detalle de compra */}
             <section className="mt-16 rounded-md bg-white lg:col-span-4 lg:mt-0">
               <h2 className="border-b border-gray-200 px-4 py-3 text-lg font-medium text-gray-900">
                 Detalle
