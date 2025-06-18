@@ -16,7 +16,7 @@ import { Navigate } from "react-router";
 import axios from "axios";
 
 import { initMercadoPago, Wallet } from "@mercadopago/sdk-react";
-initMercadoPago("APP_USR-81e7d767-9d1d-4229-afb3-d82f1fd5ed86");
+initMercadoPago("APP_USR-4bbcc18f-f704-4ab9-bc2a-fa53ba90cc66");
 
 const CartPage = () => {
   const [preferenceIdcart, setPreferenceIdcart] = useState(null);

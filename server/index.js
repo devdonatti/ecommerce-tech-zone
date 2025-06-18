@@ -15,9 +15,6 @@ app.use(
     origin: [
       "https://ecommerce-tech-zone.vercel.app/",
       "https://ecommerce-tech-zone-bptkxuv07-devdonattis-projects.vercel.app",
-      "https://ecommerce-smile-vercel-mw1z-front-git-main-devdonattis-projects.vercel.app",
-      "https://ecommerce-smile-vercel-mw1z-front-dd1wnhnyv.vercel.app",
-      "https://ecommerce-smile-vercel-mw1z-front-ju3aczsdf.vercel.app",
     ], // Permitir ambos frontends
     methods: ["GET", "POST"],
     allowedHeaders: ["Content-Type"],
@@ -46,12 +43,9 @@ app.post("/api/create_preference", async (req, res) => {
         },
       ],
       back_urls: {
-        success:
-          "https://ecommerce-tech-zone-bptkxuv07-devdonattis-projects.vercel.app",
-        failure:
-          "https://ecommerce-tech-zone-bptkxuv07-devdonattis-projects.vercel.app",
-        pending:
-          "https://ecommerce-tech-zone-bptkxuv07-devdonattis-projects.vercel.app",
+        success: "https://ecommerce-tech-zone.vercel.app",
+        failure: "https://ecommerce-tech-zone.vercel.app",
+        pending: "https://ecommerce-tech-zone.vercel.app",
       },
       auto_return: "approved",
     };
@@ -112,12 +106,9 @@ app.post("/api/create_preference_cart", async (req, res) => {
     const body = {
       items: items,
       back_urls: {
-        success:
-          "https://ecommerce-tech-zone-bptkxuv07-devdonattis-projects.vercel.app",
-        failure:
-          "https://ecommerce-tech-zone-bptkxuv07-devdonattis-projects.vercel.app",
-        pending:
-          "https://ecommerce-tech-zone-bptkxuv07-devdonattis-projects.vercel.app",
+        success: "https://ecommerce-tech-zone.vercel.app",
+        failure: "https://ecommerce-tech-zone.vercel.app",
+        pending: "https://ecommerce-tech-zone.vercel.app",
       },
       auto_return: "approved",
     };
