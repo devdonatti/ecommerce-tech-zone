@@ -14,10 +14,10 @@ const app = express();
 app.use(
   cors({
     origin: [
-      "https://tiendasmile.vercel.app",
-      "https://ecommerce-smile-vercel-mw1z-front.vercel.app",
+      "https://ecommerce-tech-zone.vercel.app",
+      "https://ecommerce-tech-zone-git-main-devdonattis-projects.vercel.app",
       "https://ecommerce-smile-vercel-mw1z-front-git-main-devdonattis-projects.vercel.app",
-      "https://ecommerce-smile-vercel-mw1z-front-dd1wnhnyv.vercel.app",
+      "https://ecommerce-tech-zone-znzpjgxmg-devdonattis-projects.vercel.app",
       "https://ecommerce-smile-vercel-mw1z-front-ju3aczsdf.vercel.app",
     ], // Permitir ambos frontends
     methods: ["GET", "POST"],
@@ -47,9 +47,9 @@ app.post("/api/create_preference", async (req, res) => {
         },
       ],
       back_urls: {
-        success: "https://ecommerce-smile-vercel-mw1z-front.vercel.app",
-        failure: "https://ecommerce-smile-vercel-mw1z-front.vercel.app",
-        pending: "https://ecommerce-smile-vercel-mw1z-front.vercel.app",
+        success: "https://ecommerce-tech-zone.vercel.app",
+        failure: "https://ecommerce-tech-zone.vercel.app",
+        pending: "https://ecommerce-tech-zone.vercel.app",
       },
       auto_return: "approved",
     };
@@ -110,9 +110,9 @@ app.post("/api/create_preference_cart", async (req, res) => {
     const body = {
       items: items,
       back_urls: {
-        success: "https://ecommerce-smile-vercel-mw1z-front.vercel.app",
-        failure: "https://ecommerce-smile-vercel-mw1z-front.vercel.app",
-        pending: "https://ecommerce-smile-vercel-mw1z-front.vercel.app",
+        success: "https://ecommerce-tech-zone.vercel.app",
+        failure: "https://ecommerce-tech-zone.vercel.app",
+        pending: "https://ecommerce-tech-zone.vercel.app",
       },
       auto_return: "approved",
     };
