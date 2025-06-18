@@ -16,7 +16,7 @@ import { Navigate } from "react-router";
 import axios from "axios";
 
 import { initMercadoPago, Wallet } from "@mercadopago/sdk-react";
-initMercadoPago("APP_USR-4bbcc18f-f704-4ab9-bc2a-fa53ba90cc66");
+initMercadoPago("APP_USR-81e7d767-9d1d-4229-afb3-d82f1fd5ed86");
 
 const CartPage = () => {
   const [preferenceIdcart, setPreferenceIdcart] = useState(null);
@@ -43,7 +43,7 @@ const CartPage = () => {
       });
 
       const response = await axios.post(
-        "https://ecommerce-tech-zone-git-main-devdonattis-projects.vercel.app//api/create_preference_cart",
+        "https://ecommerce-smile-vercel-git-main-devdonattis-projects.vercel.app/api/create_preference_cart",
         { cartItems: items }
       );
 
@@ -65,7 +65,7 @@ const CartPage = () => {
   const handleBuyNow = async () => {
     try {
       const response = await axios.post(
-        "https://ecommerce-tech-zone-git-main-devdonattis-projects.vercel.app//api/create_preference_cart",
+        "https://ecommerce-smile-vercel-git-main-devdonattis-projects.vercel.app/api/create_preference_cart",
         { cartItems }
       );
       const preferenceIdcart = response.data.id;
