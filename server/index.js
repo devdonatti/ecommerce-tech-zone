@@ -4,8 +4,7 @@ import { MercadoPagoConfig, Preference } from "mercadopago";
 
 // Configuración del cliente de MercadoPago
 const client = new MercadoPagoConfig({
-  accessToken:
-    "APP_USR-5002262327522339-110611-d2dfcbaa10598f2336e9c4b9ded29dd7-1338912701",
+  accessToken: "APP_USR-4bbcc18f-f704-4ab9-bc2a-fa53ba90cc66",
 });
 
 const app = express();
@@ -14,8 +13,7 @@ const app = express();
 app.use(
   cors({
     origin: [
-      "https://tiendasmile.vercel.app",
-      "https://ecommerce-smile-vercel-mw1z-front.vercel.app",
+      "https://ecommerce-tech-zone-bptkxuv07-devdonattis-projects.vercel.app",
       "https://ecommerce-smile-vercel-mw1z-front-git-main-devdonattis-projects.vercel.app",
       "https://ecommerce-smile-vercel-mw1z-front-dd1wnhnyv.vercel.app",
       "https://ecommerce-smile-vercel-mw1z-front-ju3aczsdf.vercel.app",
@@ -47,9 +45,12 @@ app.post("/api/create_preference", async (req, res) => {
         },
       ],
       back_urls: {
-        success: "https://ecommerce-smile-vercel-mw1z-front.vercel.app",
-        failure: "https://ecommerce-smile-vercel-mw1z-front.vercel.app",
-        pending: "https://ecommerce-smile-vercel-mw1z-front.vercel.app",
+        success:
+          "https://ecommerce-tech-zone-bptkxuv07-devdonattis-projects.vercel.app",
+        failure:
+          "https://ecommerce-tech-zone-bptkxuv07-devdonattis-projects.vercel.app",
+        pending:
+          "https://ecommerce-tech-zone-bptkxuv07-devdonattis-projects.vercel.app",
       },
       auto_return: "approved",
     };
@@ -110,9 +111,12 @@ app.post("/api/create_preference_cart", async (req, res) => {
     const body = {
       items: items,
       back_urls: {
-        success: "https://ecommerce-smile-vercel-mw1z-front.vercel.app",
-        failure: "https://ecommerce-smile-vercel-mw1z-front.vercel.app",
-        pending: "https://ecommerce-smile-vercel-mw1z-front.vercel.app",
+        success:
+          "https://ecommerce-tech-zone-bptkxuv07-devdonattis-projects.vercel.app",
+        failure:
+          "https://ecommerce-tech-zone-bptkxuv07-devdonattis-projects.vercel.app",
+        pending:
+          "https://ecommerce-tech-zone-bptkxuv07-devdonattis-projects.vercel.app",
       },
       auto_return: "approved",
     };

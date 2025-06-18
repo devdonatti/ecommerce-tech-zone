@@ -11,7 +11,7 @@ import axios from "axios";
 import { initMercadoPago } from "@mercadopago/sdk-react";
 
 // Inicialización de MercadoPago
-initMercadoPago("APP_USR-81e7d767-9d1d-4229-afb3-d82f1fd5ed86");
+initMercadoPago("APP_USR-4bbcc18f-f704-4ab9-bc2a-fa53ba90cc66");
 
 const BuyNowModal = ({ addressInfo, setAddressInfo, buyNowFunction }) => {
   const [open, setOpen] = useState(false);
@@ -41,7 +41,7 @@ const BuyNowModal = ({ addressInfo, setAddressInfo, buyNowFunction }) => {
 
       // Llamada al backend para crear la preferencia
       const response = await axios.post(
-        "https://ecommerce-smile-vercel-git-main-devdonattis-projects.vercel.app/api/create_preference_cart",
+        "https://ecommerce-tech-zone-bptkxuv07-devdonattis-projects.vercel.app/api/create_preference_cart",
         { cartItems: items }
       );
 
