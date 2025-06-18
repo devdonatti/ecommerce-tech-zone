@@ -3,6 +3,7 @@ import cors from "cors";
 import { MercadoPagoConfig, Preference } from "mercadopago";
 import dotenv from "dotenv";
 dotenv.config();
+console.log("Token MercadoPago:", process.env.MERCADOPAGO_ACCESS_TOKEN);
 
 // Configuración del cliente de MercadoPago
 const client = new MercadoPagoConfig({
