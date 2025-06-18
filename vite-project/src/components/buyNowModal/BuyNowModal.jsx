@@ -1,80 +1,64 @@
 import { Button, Dialog, DialogBody } from "@material-tailwind/react";
 import { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import {
-  incrementQuantity,
-  decrementQuantity,
-  deleteFromCart,
-} from "../../redux/cartSlice";
+import { useSelector } from "react-redux";
 import toast from "react-hot-toast";
 import axios from "axios";
 import { initMercadoPago } from "@mercadopago/sdk-react";
 
-// Inicialización de MercadoPago
+// Inicializa MercadoPago solo una vez
 initMercadoPago("APP_USR-4bbcc18f-f704-4ab9-bc2a-fa53ba90cc66");
 
 const BuyNowModal = ({ addressInfo, setAddressInfo, buyNowFunction }) => {
   const [open, setOpen] = useState(false);
+  const cartItems = useSelector((state) => state.cart);
 
-  // Función para abrir/cerrar el modal
   const handleOpen = () => setOpen(!open);
 
-  // Validación de los campos del formulario
   const isFormValid =
     addressInfo.name &&
     addressInfo.address &&
     addressInfo.pincode &&
     addressInfo.mobileNumber;
 
-  // Crear preferencia de MercadoPago para el carrito completo
-  const createPreference = async (cartItems) => {
+  const createPreference = async () => {
     try {
       const items = cartItems.map((item) => ({
-        title: item.title,
-        quantity: item.quantity,
-        price: item.price,
+        title: `${item.title} x${item.quantity}`,
+        quantity: Number(item.quantity),
+        unit_price: Number(item.price),
         description: item.description,
-        productImageUrl: item.productImageUrl,
+        picture_url: item.productImageUrl,
       }));
 
-      console.log("Items enviados al backend para crear preferencia:", items);
-
-      // Llamada al backend para crear la preferencia
       const response = await axios.post(
         "https://ecommerce-tech-zone-q2e8-git-main-devdonattis-projects.vercel.app/api/create_preference_cart",
         { cartItems: items }
       );
 
-      // Verifica lo que devuelve la respuesta
-      console.log("Respuesta del servidor:", response.data);
-
       const { id, init_point } = response.data;
 
-      // Verifica si el id fue recibido correctamente
-      if (id) {
-        console.log("Preference ID set:", id); // Verifica que se está guardando correctamente
-        window.location.href = init_point; // Redirige al usuario a MercadoPago
+      if (id && init_point) {
+        console.log("Preferencia creada correctamente:", id);
+        window.location.href = init_point; // Redirige a MercadoPago
       } else {
-        throw new Error("No se recibió un ID de preferencia");
+        throw new Error("No se recibió un ID de preferencia válido");
       }
     } catch (error) {
       console.error("Error al crear la preferencia:", error);
-      toast.error(error.message);
+      toast.error("Error al crear la preferencia");
     }
   };
 
   return (
     <>
-      {/* Botón principal para abrir el modal */}
       <Button
         type="button"
         onClick={handleOpen}
-        className="w-full px-4 py-3 text-center text-gray-100 bg-black border border-transparent dark:border-gray-700 hover:border-gray-500 hover:text-white-700 hover:bg-gray-500 rounded-xl"
+        className="w-full px-4 py-3 text-center text-gray-100 bg-black border border-transparent hover:bg-gray-700 rounded-xl"
       >
         Comprar ahora
       </Button>
 
-      {/* Modal con el formulario de dirección */}
       <Dialog open={open} handler={handleOpen} className="bg-gray-500">
         <DialogBody>
           <div className="mb-3">
@@ -82,9 +66,9 @@ const BuyNowModal = ({ addressInfo, setAddressInfo, buyNowFunction }) => {
               type="text"
               name="name"
               value={addressInfo.name}
-              onChange={(e) => {
-                setAddressInfo({ ...addressInfo, name: e.target.value });
-              }}
+              onChange={(e) =>
+                setAddressInfo({ ...addressInfo, name: e.target.value })
+              }
               placeholder="Nombre"
               className="bg-gray-300 border border-gray-200 px-2 py-2 w-full rounded-md outline-none text-black placeholder-yellow-700"
             />
@@ -95,10 +79,10 @@ const BuyNowModal = ({ addressInfo, setAddressInfo, buyNowFunction }) => {
               type="text"
               name="address"
               value={addressInfo.address}
-              onChange={(e) => {
-                setAddressInfo({ ...addressInfo, address: e.target.value });
-              }}
-              placeholder="Tu direccion"
+              onChange={(e) =>
+                setAddressInfo({ ...addressInfo, address: e.target.value })
+              }
+              placeholder="Tu dirección"
               className="bg-gray-300 border border-gray-200 px-2 py-2 w-full rounded-md outline-none text-black placeholder-yellow-700"
             />
           </div>
@@ -108,10 +92,10 @@ const BuyNowModal = ({ addressInfo, setAddressInfo, buyNowFunction }) => {
               type="number"
               name="pincode"
               value={addressInfo.pincode}
-              onChange={(e) => {
-                setAddressInfo({ ...addressInfo, pincode: e.target.value });
-              }}
-              placeholder="Codigo postal"
+              onChange={(e) =>
+                setAddressInfo({ ...addressInfo, pincode: e.target.value })
+              }
+              placeholder="Código postal"
               className="bg-gray-300 border border-gray-200 px-2 py-2 w-full rounded-md outline-none text-black placeholder-yellow-700"
             />
           </div>
@@ -121,28 +105,30 @@ const BuyNowModal = ({ addressInfo, setAddressInfo, buyNowFunction }) => {
               type="text"
               name="mobileNumber"
               value={addressInfo.mobileNumber}
-              onChange={(e) => {
+              onChange={(e) =>
                 setAddressInfo({
                   ...addressInfo,
                   mobileNumber: e.target.value,
-                });
-              }}
-              placeholder="Telefono"
+                })
+              }
+              placeholder="Teléfono"
               className="bg-gray-300 border border-gray-200 px-2 py-2 w-full rounded-md outline-none text-black placeholder-yellow-700"
             />
           </div>
 
-          {/* Botón para confirmar la compra */}
           <Button
             type="button"
             onClick={() => {
+              if (!isFormValid) {
+                return toast.error("Completa todos los campos");
+              }
               handleOpen(); // Cerrar el modal
-              buyNowFunction(createPreference); // Llamar a la función buyNowFunction que pasará createPreference
+              buyNowFunction(createPreference); // Pasa la función a buyNowFunction
             }}
-            disabled={!isFormValid} // Deshabilitar el botón si el formulario no está completo
+            disabled={!isFormValid}
             className={`w-full px-4 py-3 text-center text-gray-100 ${
               !isFormValid ? "bg-gray-400 cursor-not-allowed" : "bg-black"
-            } border border-transparent dark:border-gray-700 rounded-lg`}
+            } border border-transparent rounded-lg`}
           >
             Confirmar compra
           </Button>
