@@ -1,11 +1,12 @@
 import express from "express";
 import cors from "cors";
 import { MercadoPagoConfig, Preference } from "mercadopago";
+import dotenv from "dotenv";
+dotenv.config();
 
 // Configuración del cliente de MercadoPago
 const client = new MercadoPagoConfig({
-  accessToken:
-    "APP_USR-5814371632702786-061716-cc0d6fc4581bcbf5189e7500a81c3169-524420476",
+  accessToken: process.env.MERCADOPAGO_ACCESS_TOKEN,
 });
 
 const app = express();

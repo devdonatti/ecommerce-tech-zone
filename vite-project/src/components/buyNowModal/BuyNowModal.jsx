@@ -11,9 +11,7 @@ import axios from "axios";
 import { initMercadoPago } from "@mercadopago/sdk-react";
 
 // Inicialización de MercadoPago
-initMercadoPago(
-  "APP_USR-5814371632702786-061716-cc0d6fc4581bcbf5189e7500a81c3169-524420476"
-);
+initMercadoPago("APP_USR-4bbcc18f-f704-4ab9-bc2a-fa53ba90cc66");
 
 const BuyNowModal = ({ addressInfo, setAddressInfo, buyNowFunction }) => {
   const [open, setOpen] = useState(false);
