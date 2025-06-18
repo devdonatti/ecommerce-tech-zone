@@ -15,6 +15,7 @@ app.use(
     origin: [
       "https://ecommerce-tech-zone.vercel.app/",
       "https://ecommerce-tech-zone-bptkxuv07-devdonattis-projects.vercel.app",
+      "https://ecommerce-tech-zone-3sybjbmlg-devdonattis-projects.vercel.app",
     ], // Permitir ambos frontends
     methods: ["GET", "POST"],
     allowedHeaders: ["Content-Type"],
