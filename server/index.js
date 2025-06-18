@@ -13,6 +13,7 @@ const app = express();
 app.use(
   cors({
     origin: [
+      "https://ecommerce-tech-zone.vercel.app/",
       "https://ecommerce-tech-zone-bptkxuv07-devdonattis-projects.vercel.app",
       "https://ecommerce-smile-vercel-mw1z-front-git-main-devdonattis-projects.vercel.app",
       "https://ecommerce-smile-vercel-mw1z-front-dd1wnhnyv.vercel.app",
