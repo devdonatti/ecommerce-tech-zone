@@ -33,11 +33,11 @@ const CartPage = () => {
   const createPreference = async () => {
     try {
       const items = cartItems.map((item) => ({
-        title: `${item.title} x${item.quantity}`,
+        title: item.title,
         quantity: Number(item.quantity),
-        unit_price: Number(item.price), // ✅ Campo correcto para MercadoPago
+        price: Number(item.price),
         description: item.description,
-        picture_url: item.productImageUrl, // ✅ Si querés mostrar la imagen
+        productImageUrl: item.productImageUrl,
       }));
 
       const response = await axios.post(
