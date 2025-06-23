@@ -86,11 +86,17 @@ const CartPage = () => {
     dispatch(updateQuantity({ id, quantity: newQuantity }));
   };
 
-  const cartItemTotal = cartItems.reduce((sum, item) => sum + item.quantity, 0);
-  const cartTotal = cartItems.reduce(
-    (sum, item) => sum + item.quantity * item.price,
-    0
-  );
+  // Corregido: suma correcta de cantidades y totales
+  const cartItemTotal = cartItems.reduce((sum, item) => {
+    const quantity = Number(item.quantity);
+    return sum + (isNaN(quantity) ? 0 : quantity);
+  }, 0);
+
+  const cartTotal = cartItems.reduce((sum, item) => {
+    const quantity = Number(item.quantity);
+    const price = Number(item.price);
+    return sum + (isNaN(quantity) || isNaN(price) ? 0 : quantity * price);
+  }, 0);
 
   const user = JSON.parse(localStorage.getItem("users"));
 
@@ -108,6 +114,10 @@ const CartPage = () => {
   });
 
   const buyNowFunction = async () => {
+    if (shippingCost === 0) {
+      return toast.error("Seleccioná una opción de envío");
+    }
+
     if (
       !addressInfo.name ||
       !addressInfo.address ||
@@ -249,6 +259,7 @@ const CartPage = () => {
                       $ {cartTotal}
                     </dd>
                   </div>
+
                   <div className="py-4">
                     <dt className="text-sm text-gray-800 mb-2">Envío</dt>
                     <div className="space-y-2 text-sm">
@@ -284,7 +295,17 @@ const CartPage = () => {
                       </label>
                     </div>
                   </div>
-                  <div className="flex items-center justify-between border-y border-dashed py-4">
+
+                  {shippingCost > 0 && (
+                    <div className="flex items-center justify-between">
+                      <dt className="text-sm text-gray-800">Costo de envío</dt>
+                      <dd className="text-sm font-medium text-gray-900">
+                        $ {shippingCost}
+                      </dd>
+                    </div>
+                  )}
+
+                  <div className="flex items-center justify-between border-y border-dashed py-4 mt-2">
                     <dt className="text-base font-medium text-gray-900">
                       Total
                     </dt>
@@ -293,6 +314,7 @@ const CartPage = () => {
                     </dd>
                   </div>
                 </dl>
+
                 <div className="px-2 pb-4 font-medium text-green-700">
                   <div className="flex gap-4 mb-6">
                     <BuyNowModal

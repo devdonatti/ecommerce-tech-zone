@@ -94,7 +94,7 @@ const AddProductPage = () => {
             }
           />
           <Textarea
-            placeholder="Galería de imágenes (URLs separadas por coma)"
+            placeholder="Galería de imágenes (URLs una pegada a la otra)"
             value={product.images?.join(", ") || ""}
             onChange={(e) =>
               setProduct({

@@ -73,7 +73,7 @@ function MyState({ children }) {
     setLoading(true);
     try {
       await deleteDoc(doc(fireDB, "order", id));
-      toast.success("Order Deleted successfully");
+      toast.success("Orden borrada exitosamente");
       getAllOrderFunction();
       setLoading(false);
     } catch (error) {
