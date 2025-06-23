@@ -12,6 +12,7 @@ import { useEffect, useState } from "react";
 import { Timestamp, addDoc, collection } from "firebase/firestore";
 import { fireDB } from "../../firebase/FirebaseConfig";
 import BuyNowModal from "../../components/buyNowModal/BuyNowModal";
+import BankTransferModal from "../../components/bankTransferModal/BankTransferModal";
 import axios from "axios";
 
 const CartPage = () => {
@@ -38,7 +39,6 @@ const CartPage = () => {
           quantity: 1,
           price: shippingCost,
           description: "Envío seleccionado por el cliente",
-          productImageUrl: "", // Opcional
         },
       ];
 
@@ -86,7 +86,6 @@ const CartPage = () => {
     dispatch(updateQuantity({ id, quantity: newQuantity }));
   };
 
-  // Corregido: suma correcta de cantidades y totales
   const cartItemTotal = cartItems.reduce((sum, item) => {
     const quantity = Number(item.quantity);
     return sum + (isNaN(quantity) ? 0 : quantity);
@@ -321,6 +320,11 @@ const CartPage = () => {
                       addressInfo={addressInfo}
                       setAddressInfo={setAddressInfo}
                       buyNowFunction={buyNowFunction}
+                    />
+                    <BankTransferModal
+                      addressInfo={addressInfo}
+                      setAddressInfo={setAddressInfo}
+                      shippingCost={shippingCost}
                     />
                   </div>
                 </div>

@@ -126,7 +126,7 @@ const HomePageProductCard = () => {
                         </button>
                         <button
                           onClick={() => addCart(item)}
-                          className="w-full flex items-center justify-center gap-2 bg-cyan-600 hover:bg-cyan-700 text-white font-medium py-2 px-4 rounded-full text-sm transition-colors"
+                          className="w-full flex items-center justify-center gap-2 bg-cyan-600 hover:bg-cyan-800 text-white font-medium py-2 px-4 rounded-full text-sm transition-colors"
                         >
                           <ShoppingCart size={16} /> AGREGAR AL CARRITO
                         </button>

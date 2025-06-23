@@ -32,7 +32,7 @@ const Footer = () => {
         <div>
           <h3 className="font-bold text-lg mb-3">Categorías</h3>
           <ul className="space-y-2">
-            {["pc", "perifericos", "monitores"].map((cat, i) => (
+            {["Pc", "Periféricos", "Monitores"].map((cat, i) => (
               <Link
                 key={i}
                 to={`/category/${cat.toLowerCase()}`}
