@@ -1,95 +1,154 @@
-import { useContext } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import myContext from "../../context/myContext";
 
 const UserDetail = () => {
   const context = useContext(myContext);
   const { getAllUser } = context;
+
+  const scrollRef = useRef(null);
+  const [showArrows, setShowArrows] = useState(false);
+
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+
+    const checkScroll = () => {
+      setShowArrows(el.scrollWidth > el.clientWidth);
+    };
+
+    checkScroll();
+
+    window.addEventListener("resize", checkScroll);
+    return () => window.removeEventListener("resize", checkScroll);
+  }, [getAllUser]);
+
+  const scrollLeft = () => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollBy({ left: -150, behavior: "smooth" });
+    }
+  };
+
+  const scrollRight = () => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollBy({ left: 150, behavior: "smooth" });
+    }
+  };
+
   return (
-    <div>
-      <div>
-        <div className="py-5 flex justify-between items-center">
-          {/* text  */}
-          <h1 className=" text-xl text-black font-bold">Usuarios</h1>
-        </div>
+    <div className="relative bg-[#0a0a0a] min-h-[70vh] p-6 rounded-2xl shadow-lg border border-fuchsia-700 text-white">
+      {/* Contenedor título + flechas */}
+      <div className="flex items-center justify-center mb-6 gap-4">
+        {showArrows && (
+          <button
+            onClick={scrollLeft}
+            aria-label="Desplazar tabla a la izquierda"
+            title="Desplazar tabla a la izquierda"
+            className="flex items-center justify-center w-10 h-10 bg-fuchsia-700 hover:bg-fuchsia-600 rounded-full shadow-lg cursor-pointer transition"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-6 w-6 text-white"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={2}
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M15 19l-7-7 7-7"
+              />
+            </svg>
+          </button>
+        )}
 
-        {/* table  */}
-        <div className="w-full overflow-x-auto m-4">
-          <table className="w-full text-left border border-collapse sm:border-separate  border-black text-black">
-            <tbody>
-              <tr>
-                <th
-                  scope="col"
-                  className="h-12 px-6 text-md border-l first:border-l-0   border-black text-slate-700 bg-slate-100 font-bold fontPara"
-                >
-                  N°
-                </th>
+        <h1 className="text-2xl font-extrabold text-fuchsia-500 select-none">
+          Usuarios
+        </h1>
 
-                <th
-                  scope="col"
-                  className="h-12 px-6 text-md border-l first:border-l-0  border-black text-slate-700 bg-slate-100 font-bold fontPara"
-                >
-                  Nombre
-                </th>
+        {showArrows && (
+          <button
+            onClick={scrollRight}
+            aria-label="Desplazar tabla a la derecha"
+            title="Desplazar tabla a la derecha"
+            className="flex items-center justify-center w-10 h-10 bg-fuchsia-700 hover:bg-fuchsia-600 rounded-full shadow-lg cursor-pointer transition"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-6 w-6 text-white"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={2}
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M9 5l7 7-7 7"
+              />
+            </svg>
+          </button>
+        )}
+      </div>
 
-                <th
-                  scope="col"
-                  className="h-12 px-6 text-md border-l first:border-l-0 border-black text-slate-700 bg-slate-100 font-bold fontPara"
-                >
-                  Email
-                </th>
+      {/* Tabla con scroll horizontal sin barra visible */}
+      <div
+        className="relative overflow-x-auto"
+        ref={scrollRef}
+        style={{
+          scrollbarWidth: "none", // Firefox
+          msOverflowStyle: "none", // IE 10+
+        }}
+      >
+        {/* Ocultar scrollbar Chrome, Edge, Safari */}
+        <style>
+          {`
+            div::-webkit-scrollbar {
+              display: none;
+            }
+          `}
+        </style>
 
-                <th
-                  scope="col"
-                  className="h-12 px-6 text-md border-l first:border-l-0  border-black text-slate-700 bg-slate-100 font-bold fontPara"
-                >
-                  Uid
-                </th>
+        <table className="w-full border-collapse border border-fuchsia-700 min-w-[700px]">
+          <thead>
+            <tr className="bg-black border-b border-fuchsia-600 text-cyan-400 uppercase text-sm">
+              <th className="px-4 py-2 border border-fuchsia-600">N°</th>
+              <th className="px-4 py-2 border border-fuchsia-600">Nombre</th>
+              <th className="px-4 py-2 border border-fuchsia-600">Email</th>
+              <th className="px-4 py-2 border border-fuchsia-600">Uid</th>
+              <th className="px-4 py-2 border border-fuchsia-600">Rol</th>
+              <th className="px-4 py-2 border border-fuchsia-600">Día</th>
+            </tr>
+          </thead>
 
-                <th
-                  scope="col"
-                  className="h-12 px-6 text-md border-l first:border-l-0  border-black text-slate-700 bg-slate-100 font-bold fontPara"
-                >
-                  Rol
-                </th>
-
-                <th
-                  scope="col"
-                  className="h-12 px-6 text-md border-l first:border-l-0  border-black text-slate-700 bg-slate-100 font-bold fontPara"
-                >
-                  Dia
-                </th>
+          <tbody>
+            {getAllUser.map((value, index) => (
+              <tr
+                key={index}
+                className="bg-black border-b border-fuchsia-700 hover:bg-fuchsia-900 transition-colors"
+              >
+                <td className="px-4 py-2 border border-fuchsia-600 text-center text-sm text-cyan-400">
+                  {index + 1}
+                </td>
+                <td className="px-4 py-2 border border-fuchsia-600 text-white text-sm capitalize">
+                  {value.name}
+                </td>
+                <td className="px-4 py-2 border border-fuchsia-600 text-white text-sm break-words cursor-pointer">
+                  {value.email}
+                </td>
+                <td className="px-4 py-2 border border-fuchsia-600 text-white text-sm cursor-pointer">
+                  {value.uid}
+                </td>
+                <td className="px-4 py-2 border border-fuchsia-600 text-white text-sm cursor-pointer capitalize">
+                  {value.role}
+                </td>
+                <td className="px-4 py-2 border border-fuchsia-600 text-white text-sm cursor-pointer text-center">
+                  {value.date}
+                </td>
               </tr>
-              {getAllUser.map((value, index) => {
-                return (
-                  <tr key={index} className="text-black ">
-                    <td className="h-12 px-6 text-md transition duration-300 border-t border-l first:border-l-0  border-black stroke-slate-500 text-slate-500 ">
-                      {index + 1}
-                    </td>
-
-                    <td className="h-12 px-6 text-md transition duration-300 border-t border-l first:border-l-0  border-black stroke-slate-500 text-slate-500 first-letter:uppercase ">
-                      {value.name}
-                    </td>
-                    <td className="h-12 px-6 text-md transition duration-300 border-t border-l first:border-l-0 border-black stroke-slate-500 text-slate-500 cursor-pointer ">
-                      {value.email}
-                    </td>
-
-                    <td className="h-12 px-6 text-md transition duration-300 border-t border-l first:border-l-0 border-black stroke-slate-500 text-slate-500  cursor-pointer ">
-                      {value.uid}
-                    </td>
-
-                    <td className="h-12 px-6 text-md transition duration-300 border-t border-l first:border-l-0 border-black stroke-slate-500 text-slate-500  cursor-pointer ">
-                      {value.role}
-                    </td>
-
-                    <td className="h-12 px-6 text-md transition duration-300 border-t border-l first:border-l-0 border-black stroke-slate-500 text-slate-500 cursor-pointer ">
-                      {value.date}
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
+            ))}
+          </tbody>
+        </table>
       </div>
     </div>
   );

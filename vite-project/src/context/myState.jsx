@@ -121,6 +121,7 @@ function MyState({ children }) {
         getAllProduct,
         getAllProductFunction,
         getAllOrder,
+        getAllOrderFunction, // <-- agregar esta línea
         deleteProduct,
         getAllUser,
       }}

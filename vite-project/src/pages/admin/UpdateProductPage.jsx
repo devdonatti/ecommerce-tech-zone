@@ -7,45 +7,28 @@ import toast from "react-hot-toast";
 import Loader from "../../components/loader/Loader";
 
 const categoryList = [
-  {
-    name: "gorras",
-  },
-  {
-    name: "pilusos",
-  },
-  {
-    name: "riñoneras",
-  },
-  {
-    name: "bandoleras",
-  },
-  {
-    name: "mochilas",
-  },
-  {
-    name: "medias",
-  },
-  {
-    name: "morrales",
-  },
+  { name: "pc" },
+  { name: "monitores" },
+  { name: "perifericos" },
 ];
 
 const UpdateProductPage = () => {
   const context = useContext(myContext);
   const { loading, setLoading, getAllProductFunction } = context;
 
-  // navigate
   const navigate = useNavigate();
   const { id } = useParams();
-  console.log(id);
 
-  // product state
   const [product, setProduct] = useState({
     title: "",
     price: "",
     productImageUrl: "",
+    images: [],
     category: "",
     description: "",
+    brand: "",
+    connectivity: "",
+    compatibility: "",
     time: Timestamp.now(),
     date: new Date().toLocaleString("en-US", {
       month: "short",
@@ -54,170 +37,211 @@ const UpdateProductPage = () => {
     }),
   });
 
-  // Get Single Product Function
   const getSingleProductFunction = async () => {
     setLoading(true);
     try {
       const productTemp = await getDoc(doc(fireDB, "products", id));
-      //   console.log(product.data())
-      const product = productTemp.data();
+      const data = productTemp.data();
       setProduct({
-        title: product?.title,
-        price: product?.price,
-        productImageUrl: product?.productImageUrl,
-        category: product?.category,
-        description: product?.description,
-        quantity: product?.quantity,
-        time: product?.time,
-        date: product?.date,
+        title: data?.title || "",
+        price: data?.price || "",
+        productImageUrl: data?.productImageUrl || "",
+        images: data?.images || [],
+        category: data?.category || "",
+        description: data?.description || "",
+        brand: data?.brand || "",
+        connectivity: data?.connectivity || "",
+        compatibility: data?.compatibility || "",
+        time: data?.time || Timestamp.now(),
+        date:
+          data?.date ||
+          new Date().toLocaleString("en-US", {
+            month: "short",
+            day: "2-digit",
+            year: "numeric",
+          }),
       });
-      setLoading(false);
     } catch (error) {
       console.log(error);
+      toast.error("Error al cargar el producto");
+    } finally {
       setLoading(false);
     }
   };
 
   const updateProduct = async () => {
+    if (
+      !product.title ||
+      !product.price ||
+      !product.productImageUrl ||
+      !product.category ||
+      !product.description
+    ) {
+      return toast.error("Todos los campos obligatorios deben completarse");
+    }
+
     setLoading(true);
     try {
       await setDoc(doc(fireDB, "products", id), product);
-      toast.success("Product Updated successfully");
+      toast.success("Producto actualizado exitosamente");
       getAllProductFunction();
-      setLoading(false);
       navigate("/admin-dashboard");
     } catch (error) {
       console.log(error);
+      toast.error("Error al actualizar producto");
+    } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
     getSingleProductFunction();
-  }, []);
+  }, [id]);
+
   return (
-    <div>
-      <div className="flex justify-center items-center h-screen">
-        {loading && <Loader />}
-        {/* Login Form  */}
-        <div className="login_Form bg-pink-50 px-8 py-6 border border-pink-100 rounded-xl shadow-md">
-          {/* Top Heading  */}
-          <div className="mb-5">
-            <h2 className="text-center text-2xl font-bold text-pink-500 ">
-              Subir producto
-            </h2>
-          </div>
+    <div className="flex justify-center items-center h-screen bg-[#0a0a0a] px-4">
+      {loading && <Loader />}
 
-          {/* Input One  */}
-          <div className="mb-3">
-            <input
-              type="text"
-              name="title"
-              value={product.title}
-              onChange={(e) => {
-                setProduct({
-                  ...product,
-                  title: e.target.value,
-                });
-              }}
-              placeholder="Titulo del producto"
-              className="bg-pink-50 border text-pink-300 border-pink-200 px-2 py-2 w-96 rounded-md outline-none placeholder-pink-300"
-            />
-          </div>
+      <div className="w-full max-w-xl bg-black border border-fuchsia-700 rounded-2xl shadow-xl flex flex-col overflow-hidden h-[90vh]">
+        <div className="px-6 pt-6">
+          <h2 className="text-center text-2xl font-extrabold text-white tracking-wide mb-4">
+            Actualizar producto
+          </h2>
+        </div>
 
-          {/* Input Two  */}
-          <div className="mb-3">
-            <input
-              type="number"
-              name="price"
-              value={product.price}
-              onChange={(e) => {
-                setProduct({
-                  ...product,
-                  price: e.target.value,
-                });
-              }}
-              placeholder="Precio"
-              className="bg-pink-50 border text-pink-300 border-pink-200 px-2 py-2 w-96 rounded-md outline-none placeholder-pink-300"
-            />
-          </div>
+        <div className="px-6 pb-4 overflow-y-auto flex-grow">
+          <Input
+            placeholder="Título del producto"
+            value={product.title}
+            onChange={(e) => setProduct({ ...product, title: e.target.value })}
+          />
+          <Input
+            type="number"
+            placeholder="Precio del producto"
+            value={product.price}
+            onChange={(e) => setProduct({ ...product, price: e.target.value })}
+          />
+          <Input
+            placeholder="Imagen principal (URL)"
+            value={product.productImageUrl}
+            onChange={(e) =>
+              setProduct({ ...product, productImageUrl: e.target.value })
+            }
+          />
+          <Textarea
+            placeholder="Galería de imágenes (URLs separadas por coma)"
+            value={product.images?.join(", ") || ""}
+            onChange={(e) =>
+              setProduct({
+                ...product,
+                images: e.target.value
+                  .split(",")
+                  .map((url) => url.trim())
+                  .filter((url) => url !== ""),
+              })
+            }
+          />
 
-          {/* Input Three  */}
+          {/* Categoría */}
           <div className="mb-3">
-            <input
-              type="text"
-              name="URL producto"
-              value={product.productImageUrl}
-              onChange={(e) => {
-                setProduct({
-                  ...product,
-                  productImageUrl: e.target.value,
-                });
-              }}
-              placeholder="Url Producto"
-              className="bg-pink-50 border text-pink-300 border-pink-200 px-2 py-2 w-96 rounded-md outline-none placeholder-pink-300"
-            />
-          </div>
-
-          {/* Input Four  */}
-          <div className="mb-3">
-            <select
-              value={product.category}
-              onChange={(e) => {
-                setProduct({
-                  ...product,
-                  category: e.target.value,
-                });
-              }}
-              className="w-full px-1 py-2 text-pink-300 bg-pink-50 border border-pink-200 rounded-md outline-none  "
-            >
-              <option disabled>Seleccionar categoria del producto</option>
-              {categoryList.map((value, index) => {
-                const { name } = value;
-                return (
-                  <option
-                    className=" first-letter:uppercase"
-                    key={index}
-                    value={name}
-                  >
-                    {name}
+            <label className="text-white text-sm font-medium mb-1 block">
+              Categoría
+            </label>
+            <div className="relative">
+              <select
+                value={product.category}
+                onChange={(e) =>
+                  setProduct({ ...product, category: e.target.value })
+                }
+                className="w-full appearance-none bg-black border border-cyan-400 text-white px-3 py-2 pr-10 rounded-md outline-none focus:ring-2 focus:ring-fuchsia-600 transition duration-200"
+              >
+                <option disabled value="">
+                  Seleccionar categoría
+                </option>
+                {categoryList.map((item, index) => (
+                  <option key={index} value={item.name}>
+                    {item.name}
                   </option>
-                );
-              })}
-            </select>
+                ))}
+              </select>
+              <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-white">
+                <svg
+                  className="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M19 9l-7 7-7-7"
+                  />
+                </svg>
+              </div>
+            </div>
           </div>
 
-          {/* Input Five  */}
-          <div className="mb-3">
-            <textarea
-              value={product.description}
-              onChange={(e) => {
-                setProduct({
-                  ...product,
-                  description: e.target.value,
-                });
-              }}
-              name="description"
-              placeholder="Descripcion del producto"
-              rows="5"
-              className=" w-full px-2 py-1 text-pink-300 bg-pink-50 border border-pink-200 rounded-md outline-none placeholder-pink-300 "
-            ></textarea>
-          </div>
+          <Textarea
+            placeholder="Descripción del producto"
+            value={product.description}
+            onChange={(e) =>
+              setProduct({ ...product, description: e.target.value })
+            }
+          />
+          <Input
+            placeholder="Marca"
+            value={product.brand}
+            onChange={(e) => setProduct({ ...product, brand: e.target.value })}
+          />
+          <Input
+            placeholder="Conectividad"
+            value={product.connectivity}
+            onChange={(e) =>
+              setProduct({ ...product, connectivity: e.target.value })
+            }
+          />
+          <Input
+            placeholder="Compatibilidad"
+            value={product.compatibility}
+            onChange={(e) =>
+              setProduct({ ...product, compatibility: e.target.value })
+            }
+          />
+        </div>
 
-          {/* Update Product Button  */}
-          <div className="mb-3">
-            <button
-              onClick={updateProduct}
-              type="button"
-              className="bg-pink-500 hover:bg-pink-600 w-full text-white text-center py-2 font-bold rounded-md "
-            >
-              Subir producto
-            </button>
-          </div>
+        <div className="px-6 py-4 border-t border-fuchsia-800">
+          <button
+            onClick={updateProduct}
+            className="w-full bg-gradient-to-r from-cyan-400 to-fuchsia-500 hover:from-fuchsia-500 hover:to-cyan-400 text-black py-2 font-bold rounded-md transition duration-300"
+          >
+            Actualizar producto
+          </button>
         </div>
       </div>
     </div>
   );
 };
+
+// 🌌 Input oscuro con acento tech
+const Input = ({ type = "text", ...props }) => (
+  <div className="mb-3">
+    <input
+      type={type}
+      {...props}
+      className="w-full px-3 py-2 rounded-md border border-cyan-400 bg-black text-white placeholder-gray-400 outline-none focus:ring-2 focus:ring-fuchsia-600 transition duration-200"
+    />
+  </div>
+);
+
+const Textarea = ({ ...props }) => (
+  <div className="mb-3">
+    <textarea
+      rows="3"
+      {...props}
+      className="w-full px-3 py-2 rounded-md border border-cyan-400 bg-black text-white placeholder-gray-400 outline-none focus:ring-2 focus:ring-fuchsia-600 transition duration-200"
+    />
+  </div>
+);
 
 export default UpdateProductPage;

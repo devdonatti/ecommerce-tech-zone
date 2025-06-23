@@ -1,91 +1,43 @@
-const Track = () => {
+import { CreditCard, Truck, MessageCircle, Percent } from "lucide-react";
+
+const Features = () => {
   return (
-    <section>
-      <div className=" container mx-auto px-5 py-10 md:py-14">
-        {/* main  */}
-        <div className="flex flex-wrap -m-4 text-center">
-          {/* Track 1 */}
-          <div className="p-4 md:w-1/3 sm:w-1/2 w-full">
-            <div className="border-2 hover:shadow-xl hover:shadow-gray-200 border-gray-200 bg-gray-100 shadow-[inset_0_0_2px_rgba(0,0,0,0.6)] px-4 py-6 rounded-lg">
-              <svg
-                className="text-black w-12 h-12 mb-3 inline-block"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth={1.5}
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007zM8.625 10.5a.375.375 0 11-.75 0 .375.375 0 01.75 0zm7.5 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z"
-                />
-              </svg>
+    <section className="bg-[#eeeeee] text-black py-6 md:py-10">
+      <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 text-center">
+        {/* Feature 1 */}
+        <div className="flex flex-col items-center space-y-2">
+          <CreditCard className="w-10 h-10 text-black" />
+          <h4 className="font-bold">6 CUOTAS</h4>
+          <p className="text-sm text-gray-700">Sin interés</p>
+        </div>
 
-              <h2 className="title-font font-bold text-lg text-gray-900">
-                GORRAS PREMIUM
-              </h2>
-              <p className="leading-relaxed">
-                Nuestras gorras son 100% algodón.
-              </p>
-            </div>
-          </div>
+        {/* Feature 2 */}
+        <div className="flex flex-col items-center space-y-2">
+          <Truck className="w-10 h-10 text-black" />
+          <h4 className="font-bold">¡ENVÍOS EN EL DÍA!</h4>
+          <p className="text-sm text-gray-700">
+            En CABA y GBA. Envíos a todo el país.
+          </p>
+        </div>
 
-          {/* Track 2 */}
-          <div className="p-4 md:w-1/3 sm:w-1/2 w-full">
-            <div className="border-2 hover:shadow-xl hover:shadow-gray-200 border-gray-200 bg-gray-100 shadow-[inset_0_0_2px_rgba(0,0,0,0.6)] px-4 py-6 rounded-lg">
-              <svg
-                className="text-black w-12 h-12 mb-3 inline-block"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth={1.5}
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007zM8.625 10.5a.375.375 0 11-.75 0 .375.375 0 01.75 0zm7.5 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z"
-                />
-              </svg>
+        {/* Feature 3 */}
+        <div className="flex flex-col items-center space-y-2">
+          <MessageCircle className="w-10 h-10 text-black" />
+          <h4 className="font-bold">¿TENÉS DUDAS?</h4>
+          <p className="text-sm text-gray-700">
+            ¡Escribinos a nuestro WhatsApp!
+          </p>
+        </div>
 
-              <h2 className="title-font font-bold text-lg text-gray-900">
-                MEDIAS PREMIUM
-              </h2>
-              <p className="leading-relaxed">Medias 100% algodon.</p>
-            </div>
-          </div>
-
-          {/* Track 3  */}
-          <div className="p-4 md:w-1/3 sm:w-1/2 w-full">
-            <div className="border-2 hover:shadow-xl hover:shadow-gray-200 border-gray-200 bg-gray-100 shadow-[inset_0_0_2px_rgba(0,0,0,0.6)] px-4 py-6 rounded-lg">
-              <svg
-                className="text-black w-12 h-12 mb-3 inline-block"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth={1.5}
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007zM8.625 10.5a.375.375 0 11-.75 0 .375.375 0 01.75 0zm7.5 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z"
-                />
-              </svg>
-
-              <h2 className="title-font font-bold text-lg text-gray-900">
-                MOCHILAS Y BOLSOS PREMIUM
-              </h2>
-              <p className="leading-relaxed">
-                Fabricados con materiales de primera calidad.
-              </p>
-            </div>
-          </div>
+        {/* Feature 4 */}
+        <div className="flex flex-col items-center space-y-2">
+          <Percent className="w-10 h-10 text-black" />
+          <h4 className="font-bold">20% DE DESCUENTO</h4>
+          <p className="text-sm text-gray-700">Pagando al contado</p>
         </div>
       </div>
     </section>
   );
 };
 
-export default Track;
+export default Features;

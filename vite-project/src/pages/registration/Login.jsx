@@ -64,12 +64,13 @@ const Login = () => {
   };
 
   return (
-    <div className="flex justify-center items-center h-screen bg-gray-100 px-4 sm:px-6 md:px-8 lg:px-12">
+    <div className="flex justify-center items-center min-h-screen bg-[#111] px-4">
       {loading && <Loader />}
 
-      <div className="bg-white p-8 border border-gray-300 rounded-xl shadow-lg w-full sm:w-96 md:w-80 lg:w-1/3 xl:w-1/4">
-        <div className="mb-5 text-center">
-          <h2 className="text-3xl font-semibold text-black">Iniciar sesión</h2>
+      <div className="bg-[#1a1a1a] p-8 rounded-2xl shadow-md w-full sm:w-96 md:w-80 lg:w-1/3 xl:w-1/4">
+        <div className="mb-6 text-center">
+          <h2 className="text-3xl font-bold text-[#ccc]">Iniciar sesión</h2>
+          <p className="text-sm text-[#888] mt-1">Accedé a tu cuenta</p>
         </div>
 
         <div className="mb-4">
@@ -80,7 +81,7 @@ const Login = () => {
             onChange={(e) =>
               setUserLogin({ ...userLogin, email: e.target.value })
             }
-            className="bg-gray-100 border border-gray-300 px-4 py-2 w-full rounded-md outline-none placeholder-gray-500 focus:ring-2 focus:ring-black"
+            className="bg-[#1a1a1a] text-[#ccc] border border-[#333] px-4 py-2 w-full rounded-md outline-none placeholder-[#666] focus:ring-2 focus:ring-[#444]"
           />
         </div>
 
@@ -92,7 +93,7 @@ const Login = () => {
             onChange={(e) =>
               setUserLogin({ ...userLogin, password: e.target.value })
             }
-            className="bg-gray-100 border border-gray-300 px-4 py-2 w-full rounded-md outline-none placeholder-gray-500 focus:ring-2 focus:ring-black"
+            className="bg-[#1a1a1a] text-[#ccc] border border-[#333] px-4 py-2 w-full rounded-md outline-none placeholder-[#666] focus:ring-2 focus:ring-[#444]"
           />
         </div>
 
@@ -100,16 +101,19 @@ const Login = () => {
           <button
             type="button"
             onClick={userLoginFunction}
-            className="w-full bg-black text-white py-3 font-semibold rounded-md hover:bg-gray-700 transition-colors"
+            className="w-full bg-[#333] text-[#eee] py-3 font-semibold rounded-md hover:bg-[#444] transition-colors"
           >
             Iniciar sesión
           </button>
         </div>
 
-        <div className="text-center">
-          <p className="text-gray-700">
+        <div className="text-center text-sm">
+          <p className="text-[#999]">
             ¿No tienes cuenta?{" "}
-            <Link className="text-black font-semibold" to={"/signup"}>
+            <Link
+              className="text-[#ccc] font-medium hover:underline"
+              to={"/signup"}
+            >
               Regístrate
             </Link>
           </p>

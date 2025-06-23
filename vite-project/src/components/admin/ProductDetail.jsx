@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import myContext from "../../context/myContext";
 import Loader from "../loader/Loader";
@@ -9,10 +9,36 @@ import toast from "react-hot-toast";
 const ProductDetail = () => {
   const context = useContext(myContext);
   const { loading, setLoading, getAllProduct, getAllProductFunction } = context;
-  // console.log(getAllProduct)
-
-  // navigate
   const navigate = useNavigate();
+
+  const scrollRef = useRef(null);
+  const [showArrows, setShowArrows] = useState(false);
+
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+
+    const checkScroll = () => {
+      setShowArrows(el.scrollWidth > el.clientWidth);
+    };
+
+    checkScroll();
+
+    window.addEventListener("resize", checkScroll);
+    return () => window.removeEventListener("resize", checkScroll);
+  }, [getAllProduct]);
+
+  const scrollLeft = () => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollBy({ left: -150, behavior: "smooth" });
+    }
+  };
+
+  const scrollRight = () => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollBy({ left: 150, behavior: "smooth" });
+    }
+  };
 
   // Delete product
   const deleteProduct = async (id) => {
@@ -27,113 +53,149 @@ const ProductDetail = () => {
       setLoading(false);
     }
   };
+
   return (
-    <div>
-      <div className="py-5 flex justify-between items-center">
-        {/* text  */}
-        <h1 className=" text-xl text-black font-bold">Productos</h1>
-        {/* Add Product Button  */}
+    <div className="relative bg-[#0a0a0a] min-h-[70vh] p-6 rounded-2xl shadow-lg border border-fuchsia-700 text-white">
+      {/* Header con flechas y título */}
+      <div className="flex items-center justify-center mb-6 gap-4">
+        {showArrows && (
+          <button
+            onClick={scrollLeft}
+            aria-label="Desplazar tabla a la izquierda"
+            title="Desplazar tabla a la izquierda"
+            className="flex items-center justify-center w-10 h-10 bg-fuchsia-700 hover:bg-fuchsia-600 rounded-full shadow-lg cursor-pointer transition"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-6 w-6 text-white"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={2}
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M15 19l-7-7 7-7"
+              />
+            </svg>
+          </button>
+        )}
+
+        <h1 className="text-2xl font-extrabold text-fuchsia-500 select-none">
+          Productos
+        </h1>
+
+        {showArrows && (
+          <button
+            onClick={scrollRight}
+            aria-label="Desplazar tabla a la derecha"
+            title="Desplazar tabla a la derecha"
+            className="flex items-center justify-center w-10 h-10 bg-fuchsia-700 hover:bg-fuchsia-600 rounded-full shadow-lg cursor-pointer transition"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-6 w-6 text-white"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={2}
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M9 5l7 7-7 7"
+              />
+            </svg>
+          </button>
+        )}
+      </div>
+
+      {/* Botón agregar producto */}
+      <div className="flex justify-end mb-5">
         <Link to={"/addproduct"}>
-          <button className="px-5 py-2 bg-gray-300 border border-gray-400 rounded-lg">
-            Agregar.
+          <button className="bg-gradient-to-r from-cyan-400 to-fuchsia-500 hover:from-fuchsia-500 hover:to-cyan-400 text-black px-4 py-2 rounded-md font-bold transition duration-300">
+            Agregar
           </button>
         </Link>
       </div>
 
-      {/* Loading  */}
+      {/* Loader */}
       <div className="flex justify-center relative top-20">
         {loading && <Loader />}
       </div>
 
-      {/* table  */}
-      <div className="w-full overflow-x-auto mb-5">
-        <table className="w-full text-left border border-collapse sm:border-separate border-black teblack">
-          <tbody>
-            <tr>
-              <th
-                scope="col"
-                className="h-12 px-6 text-md border-l first:border-l-0 border-black text-slate-700 bg-slate-100 font-bold fontPara"
-              >
-                N°
-              </th>
-              <th
-                scope="col"
-                className="h-12 px-6 text-md border-l first:border-l-0 border-black text-slate-700 bg-slate-100 font-bold fontPara"
-              >
-                Imagen
-              </th>
-              <th
-                scope="col"
-                className="h-12 px-6 text-md font-bold fontPara border-l first:border-l-0 border-black text-slate-700 bg-slate-100"
-              >
-                Titulo
-              </th>
-              <th
-                scope="col"
-                className="h-12 px-6 text-md font-bold fontPara border-l first:border-l-0 border-black text-slate-700 bg-slate-100"
-              >
-                Precio
-              </th>
-              <th
-                scope="col"
-                className="h-12 px-6 text-md font-bold fontPara border-l first:border-l-0 border-black text-slate-700 bg-slate-100"
-              >
-                Categoria
-              </th>
-              <th
-                scope="col"
-                className="h-12 px-6 text-md font-bold fontPara border-l first:border-l-0 border-black text-slate-700 bg-slate-100"
-              >
-                {" "}
-                Dia
-              </th>
-              <th
-                scope="col"
-                className="h-12 px-6 text-md font-bold fontPara border-l first:border-l-0 border-black text-slate-700 bg-slate-100"
-              >
-                Accion
-              </th>
-              <th
-                scope="col"
-                className="h-12 px-6 text-md font-bold fontPara border-l first:border-l-0 border-black text-slate-700 bg-slate-100"
-              >
-                Accion
-              </th>
+      {/* Tabla con scroll horizontal sin barra visible */}
+      <div
+        className="relative overflow-x-auto"
+        ref={scrollRef}
+        style={{
+          scrollbarWidth: "none", // Firefox
+          msOverflowStyle: "none", // IE 10+
+        }}
+      >
+        {/* Ocultar scrollbar Chrome, Edge, Safari */}
+        <style>
+          {`
+            div::-webkit-scrollbar {
+              display: none;
+            }
+          `}
+        </style>
+
+        <table className="w-full border-collapse border border-fuchsia-700 min-w-[800px]">
+          <thead>
+            <tr className="bg-black border-b border-fuchsia-600 text-cyan-400 uppercase text-sm">
+              <th className="px-4 py-2 border border-fuchsia-600">N°</th>
+              <th className="px-4 py-2 border border-fuchsia-600">Imagen</th>
+              <th className="px-4 py-2 border border-fuchsia-600">Título</th>
+              <th className="px-4 py-2 border border-fuchsia-600">Precio</th>
+              <th className="px-4 py-2 border border-fuchsia-600">Categoría</th>
+              <th className="px-4 py-2 border border-fuchsia-600">Día</th>
+              <th className="px-4 py-2 border border-fuchsia-600">Editar</th>
+              <th className="px-4 py-2 border border-fuchsia-600">Borrar</th>
             </tr>
+          </thead>
+          <tbody>
             {getAllProduct.map((item, index) => {
               const { id, title, price, category, date, productImageUrl } =
                 item;
               return (
-                <tr key={index} className="text-black">
-                  <td className="h-12 px-6 text-md  border-black transition duration-300 border-t border-l first:border-l-0 bordblack stroke-slate-500 text-slate-500 ">
+                <tr
+                  key={index}
+                  className="bg-black border-b border-fuchsia-700 hover:bg-fuchsia-900 transition-colors"
+                >
+                  <td className="px-4 py-2 border border-fuchsia-600 text-center text-sm text-cyan-400">
                     {index + 1}.
                   </td>
-                  <td className="h-12 px-6 text-md  border-black transition duration-300 border-t border-l first:border-l-0 bordblack stroke-slate-500 text-slate-500 first-letter:uppercase ">
-                    <div className="flex justify-center">
-                      <img className="w-20 " src={productImageUrl} alt="" />
-                    </div>
+                  <td className="px-4 py-2 border border-fuchsia-600 text-center">
+                    <img
+                      className="w-20 mx-auto rounded-md object-contain"
+                      src={productImageUrl}
+                      alt={title}
+                    />
                   </td>
-                  <td className="h-12 px-6 text-md border-black transition duration-300 border-t border-l first:border-l-0 bordblack stroke-slate-500 text-slate-500 first-letter:uppercase ">
+                  <td className="px-4 py-2 border border-fuchsia-600 text-white text-sm capitalize">
                     {title}
                   </td>
-                  <td className="h-12 px-6  border-black text-md transition duration-300 border-t border-l first:border-l-0 bordblack stroke-slate-500 text-slate-500 first-letter:uppercase ">
+                  <td className="px-4 py-2 border border-fuchsia-600 text-white text-sm">
                     $ {price}
                   </td>
-                  <td className="h-12 px-6 text-md  border-black transition duration-300 border-t border-l first:border-l-0 bordblack stroke-slate-500 text-slate-500 first-letter:uppercase ">
+                  <td className="px-4 py-2 border border-fuchsia-600 text-white text-sm capitalize">
                     {category}
                   </td>
-                  <td className="h-12 px-6 text-md  border-black transition duration-300 border-t border-l first:border-l-0 bordblack stroke-slate-500 text-slate-500 first-letter:uppercase ">
+                  <td className="px-4 py-2 border border-fuchsia-600 text-white text-sm text-center">
                     {date}
                   </td>
                   <td
                     onClick={() => navigate(`/updateproduct/${id}`)}
-                    className="h-12 px-6 text-md  border-black transition duration-300 border-t border-l first:border-l-0 bordblack stroke-slate-500 text-slate-500 text-green-500 cursor-pointer "
+                    className="px-4 py-2 border border-fuchsia-600 text-green-400 text-center cursor-pointer hover:bg-green-700 transition duration-300 font-semibold"
                   >
                     Editar
                   </td>
                   <td
                     onClick={() => deleteProduct(id)}
-                    className="h-12 px-6 text-md  border-black transition duration-300 border-t border-l first:border-l-0 bordblack stroke-slate-500 text-slate-500 text-red-500 cursor-pointer "
+                    className="px-4 py-2 border border-fuchsia-600 text-red-500 text-center cursor-pointer hover:bg-red-700 transition duration-300 font-semibold"
                   >
                     Borrar
                   </td>

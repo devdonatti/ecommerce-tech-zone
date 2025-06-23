@@ -144,29 +144,23 @@ const CartPage = () => {
   });
 
   // Función para realizar la compra
-  const buyNowFunction = (createPreference) => {
-    createPreference(cartItems); // Usar cartItems de Redux o el estado del carrito
-    // Validación de campos
+  const buyNowFunction = async () => {
     if (
-      addressInfo.name === "" ||
-      addressInfo.address === "" ||
-      addressInfo.pincode === "" ||
-      addressInfo.mobileNumber === ""
+      !addressInfo.name ||
+      !addressInfo.address ||
+      !addressInfo.pincode ||
+      !addressInfo.mobileNumber
     ) {
       return toast.error("Todos los campos son requeridos");
     }
 
-    // Información de la orden
     const orderInfo = {
       cartItems,
-      addressInfo: {
-        ...addressInfo,
-        time: addressInfo.time, // Ya está en milisegundos y es serializable
-      },
-      email: user.email,
-      userid: user.uid,
+      addressInfo,
+      email: user?.email || "invitado",
+      userid: user?.uid || "invitado",
       status: "confirmed",
-      time: Timestamp.now().toMillis(), // Convertir el Timestamp a milisegundos
+      time: Timestamp.now().toMillis(),
       date: new Date().toLocaleString("en-US", {
         month: "short",
         day: "2-digit",
@@ -175,19 +169,11 @@ const CartPage = () => {
     };
 
     try {
-      // Guardar la orden en Firebase
+      await createPreference();
       const orderRef = collection(fireDB, "order");
-      addDoc(orderRef, orderInfo);
-      setAddressInfo({
-        name: "",
-        address: "",
-        pincode: "",
-        mobileNumber: "",
-        time: Timestamp.now().toMillis(), // Asegúrate de resetear el time
-      });
+      await addDoc(orderRef, orderInfo);
       toast.success("Orden creada exitosamente");
     } catch (error) {
-      console.log(error);
       toast.error("Error al crear la orden");
     }
   };
@@ -372,15 +358,11 @@ const CartPage = () => {
                 </dl>
                 <div className="px-2 pb-4 font-medium text-green-700">
                   <div className="flex gap-4 mb-6">
-                    {user ? (
-                      <BuyNowModal
-                        addressInfo={addressInfo}
-                        setAddressInfo={setAddressInfo}
-                        buyNowFunction={buyNowFunction}
-                      />
-                    ) : (
-                      <Navigate to={"/login"} />
-                    )}
+                    <BuyNowModal
+                      addressInfo={addressInfo}
+                      setAddressInfo={setAddressInfo}
+                      buyNowFunction={buyNowFunction}
+                    />
                   </div>
 
                   {preferenceIdcart && (

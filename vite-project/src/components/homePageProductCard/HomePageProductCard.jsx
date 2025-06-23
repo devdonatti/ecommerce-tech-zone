@@ -3,102 +3,141 @@ import { useNavigate } from "react-router";
 import myContext from "../../context/myContext";
 import { useDispatch, useSelector } from "react-redux";
 import toast from "react-hot-toast";
-import { addToCart, deleteFromCart } from "../../redux/cartSlice";
+import { addToCart } from "../../redux/cartSlice";
+import Slider from "react-slick";
+import { ChevronLeft, ChevronRight, Eye, ShoppingCart } from "lucide-react";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
+
+// Flechas personalizadas
+const PrevArrow = ({ onClick }) => (
+  <div
+    className="hidden md:flex absolute left-0 top-1/2 transform -translate-y-1/2 z-10 cursor-pointer bg-white dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-600 shadow p-2 rounded-full"
+    onClick={onClick}
+  >
+    <ChevronLeft size={22} />
+  </div>
+);
+
+const NextArrow = ({ onClick }) => (
+  <div
+    className="hidden md:flex absolute right-0 top-1/2 transform -translate-y-1/2 z-10 cursor-pointer bg-white dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-600 shadow p-2 rounded-full"
+    onClick={onClick}
+  >
+    <ChevronRight size={22} />
+  </div>
+);
 
 const HomePageProductCard = () => {
   const navigate = useNavigate();
   const context = useContext(myContext);
   const { getAllProduct } = context;
 
-  const cartItems = useSelector((state) => state.cart); // Asegúrate de que 'cart' sea un array
+  const cartItems = useSelector((state) => state.cart);
   const dispatch = useDispatch();
 
-  // Agregar un producto al carrito
   const addCart = (item) => {
     dispatch(addToCart(item));
     toast.success("Agregado al carrito");
   };
 
-  // Eliminar un producto del carrito
-  const deleteCart = (item) => {
-    dispatch(deleteFromCart(item));
-    toast.success("Borrado del carrito");
-  };
-
-  // Sincronizar el carrito con el localStorage cuando cambie
   useEffect(() => {
     localStorage.setItem("cart", JSON.stringify(cartItems));
   }, [cartItems]);
 
+  const settings = {
+    dots: false,
+    infinite: true,
+    speed: 500,
+    slidesToShow: 4,
+    slidesToScroll: 1,
+    arrows: true,
+    autoplay: true,
+    autoplaySpeed: 5000,
+    pauseOnHover: true,
+    prevArrow: <PrevArrow />,
+    nextArrow: <NextArrow />,
+    responsive: [
+      {
+        breakpoint: 1024,
+        settings: { slidesToShow: 3 },
+      },
+      {
+        breakpoint: 768,
+        settings: { slidesToShow: 2 },
+      },
+      {
+        breakpoint: 480,
+        settings: { slidesToShow: 1 },
+      },
+    ],
+  };
+
   return (
-    <div className="mt-10">
-      {/* Heading  */}
-      <div className="">
-        <h1 className="text-center mb-5 text-2xl font-semibold">Destacados</h1>
-      </div>
+    <div className="mt-12 px-4">
+      <h1 className="text-center mb-6 text-2xl font-semibold dark:text-white">
+        Destacados
+      </h1>
+      <div className="relative">
+        <Slider {...settings}>
+          {Array.isArray(getAllProduct) &&
+            getAllProduct.slice(0, 10).map((item) => {
+              const { id, title, price, productImageUrl } = item;
+              return (
+                <div key={id} className="px-2 m-4">
+                  <div className="bg-white dark:bg-gray-900 border p-2 border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden shadow-sm hover:shadow-[0_0_15px_#06b6d4] hover:border-cyan-500 transition-all duration-300">
+                    {/* Imagen */}
+                    <img
+                      onClick={() => navigate(`/productinfo/${id}`)}
+                      className="h-52 sm:h-60 w-full object-cover cursor-pointer"
+                      src={productImageUrl}
+                      alt={title}
+                    />
 
-      {/* Main Section */}
-      <section className="text-gray-600 body-font">
-        <div className="container px-5 py-5 mx-auto">
-          <div className="flex flex-wrap -m-4">
-            {/* Asegúrate de que 'getAllProduct' sea un array */}
-            {Array.isArray(getAllProduct) &&
-              getAllProduct.slice(0, 8).map((item, index) => {
-                const { id, title, price, productImageUrl } = item;
-                return (
-                  <div key={index} className="p-4 w-full md:w-1/4">
-                    <div className="h-full border border-gray-300 rounded-xl overflow-hidden shadow-md cursor-pointer flex flex-col">
-                      {/* Imagen */}
-                      <img
-                        onClick={() => navigate(`/productinfo/${id}`)}
-                        className="lg:h-80 h-96 w-full object-cover"
-                        src={productImageUrl}
-                        alt="product"
-                      />
+                    {/* Contenido */}
+                    <div className="p-4 space-y-2">
+                      <h2 className="text-sm font-medium text-gray-800 dark:text-gray-100 truncate">
+                        {title}
+                      </h2>
 
-                      {/* Contenido */}
-                      <div className="p-6 flex flex-col justify-between flex-grow">
-                        <div>
-                          <h2 className="tracking-widest text-xs title-font font-medium text-gray-400 mb-1">
-                            SMILE
-                          </h2>
+                      {/* Precio original tachado */}
+                      <p className="text-xs text-gray-400 dark:text-gray-500 line-through">
+                        ${Math.round(price * 1.1).toLocaleString("es-AR")}
+                      </p>
 
-                          {/* Título truncado en una línea */}
-                          <h1 className="title-font text-lg font-medium text-gray-900 mb-2 overflow-hidden text-ellipsis whitespace-nowrap">
-                            {title}
-                          </h1>
+                      {/* Precio actual */}
+                      <p className="text-lg font-bold text-gray-900 dark:text-white">
+                        ${Number(price).toLocaleString("es-AR")}
+                      </p>
 
-                          <h1 className="title-font text-lg font-medium text-gray-900 mb-4">
-                            ${price}
-                          </h1>
-                        </div>
+                      {/* Precio con transferencia */}
+                      <p className="text-xs text-green-600 dark:text-green-400 font-medium">
+                        ${Math.round(price * 0.9).toLocaleString("es-AR")} con
+                        transferencia
+                      </p>
 
-                        {/* Botón alineado abajo */}
-                        <div className="flex justify-center mt-auto">
-                          {cartItems.some((p) => p.id === item.id) ? (
-                            <button
-                              onClick={() => deleteCart(item)}
-                              className="bg-red-700 hover:bg-gray-600 w-full text-white py-[6px] rounded-lg font-bold"
-                            >
-                              Borrar
-                            </button>
-                          ) : (
-                            <button
-                              onClick={() => addCart(item)}
-                              className="bg-black hover:bg-gray-600 w-full text-white py-[6px] rounded-lg font-bold"
-                            >
-                              Agregar al carrito
-                            </button>
-                          )}
-                        </div>
+                      {/* Botones */}
+                      <div className="flex flex-col gap-2 mt-3">
+                        <button
+                          onClick={() => navigate(`/productinfo/${id}`)}
+                          className="w-full flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-full text-sm transition-colors"
+                        >
+                          <Eye size={16} /> VER MÁS
+                        </button>
+                        <button
+                          onClick={() => addCart(item)}
+                          className="w-full flex items-center justify-center gap-2 bg-cyan-600 hover:bg-cyan-700 text-white font-medium py-2 px-4 rounded-full text-sm transition-colors"
+                        >
+                          <ShoppingCart size={16} /> AGREGAR AL CARRITO
+                        </button>
                       </div>
                     </div>
                   </div>
-                );
-              })}
-          </div>
-        </div>
-      </section>
+                </div>
+              );
+            })}
+        </Slider>
+      </div>
     </div>
   );
 };
