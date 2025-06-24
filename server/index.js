@@ -3,6 +3,7 @@ import cors from "cors";
 import { MercadoPagoConfig, Preference } from "mercadopago";
 import dotenv from "dotenv";
 dotenv.config();
+
 console.log("Token MercadoPago:", process.env.MERCADOPAGO_ACCESS_TOKEN);
 
 // Configuración del cliente de MercadoPago
@@ -16,12 +17,14 @@ const app = express();
 app.use(
   cors({
     origin: [
+      "https://www.vikingtech.com.ar",
+
       "https://ecommerce-tech-zone.vercel.app",
       "https://ecommerce-tech-zone-git-main-devdonattis-projects.vercel.app",
       "https://ecommerce-smile-vercel-mw1z-front-git-main-devdonattis-projects.vercel.app",
       "https://ecommerce-tech-zone-znzpjgxmg-devdonattis-projects.vercel.app",
       "https://ecommerce-smile-vercel-mw1z-front-ju3aczsdf.vercel.app",
-    ], // Permitir ambos frontends
+    ],
     methods: ["GET", "POST"],
     allowedHeaders: ["Content-Type"],
   })
@@ -35,7 +38,7 @@ app.get("/", (req, res) => {
 
 // Endpoint para crear una preferencia desde el detalle del producto
 app.post("/api/create_preference", async (req, res) => {
-  console.log("Datos recibidos en /create_preference:", req.body); // Agregar log para verificar los datos que recibes
+  console.log("Datos recibidos en /create_preference:", req.body);
   try {
     const body = {
       items: [
@@ -49,9 +52,9 @@ app.post("/api/create_preference", async (req, res) => {
         },
       ],
       back_urls: {
-        success: "https://ecommerce-tech-zone.vercel.app",
-        failure: "https://ecommerce-tech-zone.vercel.app",
-        pending: "https://ecommerce-tech-zone.vercel.app",
+        success: "https://www.vikingtech.com.ar",
+        failure: "https://www.vikingtech.com.ar",
+        pending: "https://www.vikingtech.com.ar",
       },
       auto_return: "approved",
     };
@@ -59,18 +62,13 @@ app.post("/api/create_preference", async (req, res) => {
     const preference = new Preference(client);
     const result = await preference.create({ body });
 
-    console.log("Resultado completo de MercadoPago:", result);
-
-    if (result && result.id && result.init_point) {
+    if (result?.id && result?.init_point) {
       return res.json({
         id: result.id,
         init_point: result.init_point,
       });
     } else {
-      console.error("Respuesta inesperada de MercadoPago:", result);
-      return res.status(500).json({
-        error: "No se recibió un ID de preferencia válido.",
-      });
+      return res.status(500).json({ error: "No se recibió un ID válido." });
     }
   } catch (error) {
     console.error("Error al crear la preferencia:", error);
@@ -80,11 +78,13 @@ app.post("/api/create_preference", async (req, res) => {
   }
 });
 
-// Endpoint para crear una preferencia desde el carrito de compras
+// ✅ Endpoint para crear una preferencia desde el carrito, incluyendo envío
 app.post("/api/create_preference_cart", async (req, res) => {
-  console.log("Datos recibidos en /create_preference_cart:", req.body); // Agregar log para verificar los datos que recibes
+  console.log("Datos recibidos en /create_preference_cart:", req.body);
+
   try {
     const cartItems = req.body.cartItems;
+    const shippingCost = Number(req.body.shippingCost || 0);
 
     if (!cartItems || cartItems.length === 0) {
       return res.status(400).json({
@@ -97,24 +97,37 @@ app.post("/api/create_preference_cart", async (req, res) => {
       const unit_price = Number(item.price);
 
       if (isNaN(quantity) || isNaN(unit_price)) {
-        throw new Error("La cantidad o el precio no son números válidos");
+        throw new Error("La cantidad o el precio no son válidos");
       }
 
       return {
         title: item.title,
         quantity,
         unit_price,
+        currency_id: "ARS",
         description: item.description,
         picture_url: item.productImageUrl,
       };
     });
 
+    // Agregar el costo de envío como ítem adicional si corresponde
+    if (shippingCost > 0) {
+      items.push({
+        title: "Costo de envío",
+        quantity: 1,
+        unit_price: shippingCost,
+        currency_id: "ARS",
+        description: "Envío seleccionado por el cliente",
+        picture_url: "",
+      });
+    }
+
     const body = {
-      items: items,
+      items,
       back_urls: {
-        success: "https://ecommerce-tech-zone.vercel.app",
-        failure: "https://ecommerce-tech-zone.vercel.app",
-        pending: "https://ecommerce-tech-zone.vercel.app",
+        success: "https://www.vikingtech.com.ar",
+        failure: "https://www.vikingtech.com.ar",
+        pending: "https://www.vikingtech.com.ar",
       },
       auto_return: "approved",
     };
@@ -122,18 +135,13 @@ app.post("/api/create_preference_cart", async (req, res) => {
     const preference = new Preference(client);
     const result = await preference.create({ body });
 
-    console.log("Resultado completo de MercadoPago:", result);
-
-    if (result && result.id && result.init_point) {
+    if (result?.id && result?.init_point) {
       return res.json({
         id: result.id,
         init_point: result.init_point,
       });
     } else {
-      console.error("Respuesta inesperada de MercadoPago:", result);
-      return res.status(500).json({
-        error: "No se recibió un ID de preferencia válido.",
-      });
+      return res.status(500).json({ error: "No se recibió un ID válido." });
     }
   } catch (error) {
     console.error("Error al crear la preferencia:", error);
@@ -143,13 +151,13 @@ app.post("/api/create_preference_cart", async (req, res) => {
   }
 });
 
-// Configuración para Vercel: No iniciar el servidor manualmente
+// Configuración para Vercel
 if (process.env.NODE_ENV !== "production") {
   app.listen(3000, () => {
-    console.log(`Servidor local corriendo en el puerto 3000`);
+    console.log("Servidor local corriendo en el puerto 3000");
   });
 }
 
 export default (req, res) => {
-  app(req, res); // Llamar a la aplicación express para manejar las solicitudes en Vercel
+  app(req, res);
 };
