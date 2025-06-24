@@ -89,7 +89,7 @@ const CategoryPage = () => {
                   alt="No products"
                 />
                 <h1 className="text-black text-xl">
-                  No {categoryname} se encontraron productos
+                  {categoryname} no fue encontrado
                 </h1>
               </div>
             )}

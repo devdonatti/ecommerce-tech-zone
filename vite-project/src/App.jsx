@@ -18,6 +18,7 @@ import { ProtectedRouteForAdmin } from "./protectedRoute/ProtectedRouteForAdmin"
 import CategoryPage from "./pages/category/CategoryPage";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
+import FAQ from "./components/faq/faq.jsx";
 
 const App = () => {
   return (
@@ -34,6 +35,7 @@ const App = () => {
             <Route path="/allproduct" element={<AllProduct />} />
             <Route path="/signup" element={<Signup />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/faq" element={<FAQ />} />
             <Route
               path="/category/:categoryname"
               element={<CategoryPage />}

@@ -188,7 +188,7 @@ const Navbar = () => {
 
         {/* Right: Icons */}
         <div className="w-1/3 flex justify-end space-x-6 items-center">
-          <Link to="/ayuda" className="flex flex-col items-center text-sm">
+          <Link to="/FAQ" className="flex flex-col items-center text-sm">
             <MessageCircle size={22} />
             <span>Ayuda</span>
           </Link>

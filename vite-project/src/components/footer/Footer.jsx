@@ -11,7 +11,7 @@ import { MessageCircle, PhoneCall } from "lucide-react";
 
 const Footer = () => {
   return (
-    <footer className="bg-[#e5e5e5] text-black text-sm mt-12">
+    <footer className="bg-[#e5e5e5] text-black text-sm mt-12 dark:bg-gray-900  dark:text-white">
       {/* Logo centrado arriba en mobile */}
       <div className="py-8 text-center lg:hidden">
         <Link to="/">
@@ -32,7 +32,7 @@ const Footer = () => {
         <div>
           <h3 className="font-bold text-lg mb-3">Categorías</h3>
           <ul className="space-y-2">
-            {["Pc", "Periféricos", "Monitores"].map((cat, i) => (
+            {["Pc", "Perifericos", "Monitores"].map((cat, i) => (
               <Link
                 key={i}
                 to={`/category/${cat.toLowerCase()}`}
