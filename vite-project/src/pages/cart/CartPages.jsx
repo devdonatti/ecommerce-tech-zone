@@ -26,21 +26,13 @@ const CartPage = () => {
 
   const createPreference = async () => {
     try {
-      const items = [
-        ...cartItems.map((item) => ({
-          title: item.title,
-          quantity: Number(item.quantity),
-          price: Number(item.price),
-          description: item.description,
-          productImageUrl: item.productImageUrl,
-        })),
-        {
-          title: "Costo de envío",
-          quantity: 1,
-          price: shippingCost,
-          description: "Envío seleccionado por el cliente",
-        },
-      ];
+      const items = cartItems.map((item) => ({
+        title: item.title,
+        quantity: Number(item.quantity),
+        price: Number(item.price),
+        description: item.description,
+        productImageUrl: item.productImageUrl,
+      }));
 
       const response = await axios.post(
         "https://ecommerce-tech-zone-q2e8-git-main-devdonattis-projects.vercel.app/api/create_preference_cart",
