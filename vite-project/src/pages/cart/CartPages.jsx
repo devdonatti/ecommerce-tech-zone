@@ -16,6 +16,8 @@ import BankTransferModal from "../../components/bankTransferModal/BankTransferMo
 import axios from "axios";
 
 const CartPage = () => {
+  const [errors, setErrors] = useState({});
+
   const [shippingCost, setShippingCost] = useState(0);
   const cartItems = useSelector((state) => state.cart);
   const dispatch = useDispatch();
@@ -105,17 +107,26 @@ const CartPage = () => {
   });
 
   const buyNowFunction = async () => {
-    if (shippingCost === 0) {
-      return toast.error("Seleccioná una opción de envío");
+    const nameRegex = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/;
+    const addressRegex = /^[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ\s,.-]+$/;
+    const pincodeRegex = /^[0-9]{4,10}$/;
+    const mobileRegex = /^[0-9]{6,15}$/;
+
+    const newErrors = {
+      name: !nameRegex.test(addressInfo.name),
+      address: !addressRegex.test(addressInfo.address),
+      pincode: !pincodeRegex.test(addressInfo.pincode),
+      mobileNumber: !mobileRegex.test(addressInfo.mobileNumber),
+    };
+
+    setErrors(newErrors);
+
+    if (Object.values(newErrors).some((error) => error)) {
+      return toast.error("Completá los campos correctamente");
     }
 
-    if (
-      !addressInfo.name ||
-      !addressInfo.address ||
-      !addressInfo.pincode ||
-      !addressInfo.mobileNumber
-    ) {
-      return toast.error("Todos los campos son requeridos");
+    if (shippingCost === 0) {
+      return toast.error("Seleccioná una opción de envío");
     }
 
     const orderInfo = {
@@ -312,6 +323,8 @@ const CartPage = () => {
                       addressInfo={addressInfo}
                       setAddressInfo={setAddressInfo}
                       buyNowFunction={buyNowFunction}
+                      errors={errors}
+                      setErrors={setErrors}
                     />
                     <BankTransferModal
                       addressInfo={addressInfo}

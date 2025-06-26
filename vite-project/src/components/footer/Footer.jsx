@@ -51,16 +51,16 @@ const Footer = () => {
             <li className="flex items-center gap-2">
               <Phone size={16} />
               <a
-                href="https://wa.me/541171030601"
+                href="https://wa.me/541136713215"
                 target="_blank"
                 rel="noreferrer"
               >
-                WhatsApp 11 7103-0601
+                WhatsApp +5411-3671-3215
               </a>
             </li>
             <li className="flex items-center gap-2">
               <Mail size={16} />
-              <a href="mailto:info@techzone.com.ar">info@techzone.com.ar</a>
+              <a href="mailto:info@techzone.com.ar">ventas@vikingtech.com.ar</a>
             </li>
           </ul>
         </div>
@@ -70,7 +70,7 @@ const Footer = () => {
           <h3 className="font-bold text-lg mb-3">Sigamos conectados</h3>
           <div className="flex gap-4">
             <a
-              href="https://instagram.com/smile.ar_"
+              href="https://instagram.com"
               target="_blank"
               rel="noreferrer"
               className="bg-black text-white p-2 rounded-full hover:bg-gray-800 transition"
@@ -78,13 +78,13 @@ const Footer = () => {
               <Instagram size={20} />
             </a>
             <a
-              href="#"
+              href="https://www.facebook.com/profile.php?id=61577699343940"
               className="bg-black text-white p-2 rounded-full hover:bg-gray-800 transition"
             >
               <Facebook size={20} />
             </a>
             <a
-              href="https://wa.me/5491170618004"
+              href="https://wa.me/541136713215"
               target="_blank"
               rel="noopener noreferrer"
               className="bg-black text-white p-2 rounded-full hover:bg-green-600 transition"

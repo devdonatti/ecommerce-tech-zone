@@ -7,17 +7,20 @@ import { initMercadoPago } from "@mercadopago/sdk-react";
 
 initMercadoPago("APP_USR-4bbcc18f-f704-4ab9-bc2a-fa53ba90cc66");
 
-const BuyNowModal = ({ addressInfo, setAddressInfo, buyNowFunction }) => {
+const BuyNowModal = ({
+  addressInfo,
+  setAddressInfo,
+  buyNowFunction,
+  errors,
+  setErrors,
+}) => {
   const [open, setOpen] = useState(false);
   const cartItems = useSelector((state) => state.cart);
 
-  const handleOpen = () => setOpen(!open);
-
-  const isFormValid =
-    addressInfo.name &&
-    addressInfo.address &&
-    addressInfo.pincode &&
-    addressInfo.mobileNumber;
+  const handleOpen = () => {
+    setOpen(!open);
+    setErrors({});
+  };
 
   const createPreference = async (cartItems) => {
     try {
@@ -71,44 +74,67 @@ const BuyNowModal = ({ addressInfo, setAddressInfo, buyNowFunction }) => {
               type="text"
               name="name"
               value={addressInfo.name}
-              onChange={(e) =>
-                setAddressInfo({ ...addressInfo, name: e.target.value })
-              }
+              onChange={(e) => {
+                setAddressInfo({ ...addressInfo, name: e.target.value });
+                setErrors({ ...errors, name: false });
+              }}
               placeholder="Nombre completo"
-              className="w-full rounded-md border border-gray-300 px-3 py-2 outline-none focus:border-cyan-500 placeholder-gray-400"
+              className={`w-full rounded-md px-3 py-2 outline-none placeholder-gray-400 ${
+                errors.name
+                  ? "border border-red-500"
+                  : "border border-gray-300 focus:border-cyan-500"
+              }`}
             />
 
             <input
               type="text"
               name="address"
               value={addressInfo.address}
-              onChange={(e) =>
-                setAddressInfo({ ...addressInfo, address: e.target.value })
-              }
+              onChange={(e) => {
+                setAddressInfo({ ...addressInfo, address: e.target.value });
+                setErrors({ ...errors, address: false });
+              }}
               placeholder="Dirección"
-              className="w-full rounded-md border border-gray-300 px-3 py-2 outline-none focus:border-cyan-500 placeholder-gray-400"
+              className={`w-full rounded-md px-3 py-2 outline-none placeholder-gray-400 ${
+                errors.address
+                  ? "border border-red-500"
+                  : "border border-gray-300 focus:border-cyan-500"
+              }`}
             />
 
             <input
               type="number"
               name="pincode"
               value={addressInfo.pincode}
-              onChange={(e) =>
-                setAddressInfo({ ...addressInfo, pincode: e.target.value })
-              }
+              onChange={(e) => {
+                setAddressInfo({ ...addressInfo, pincode: e.target.value });
+                setErrors({ ...errors, pincode: false });
+              }}
               placeholder="Código postal"
-              className="w-full rounded-md border border-gray-300 px-3 py-2 outline-none focus:border-cyan-500 placeholder-gray-400"
+              className={`w-full rounded-md px-3 py-2 outline-none placeholder-gray-400 ${
+                errors.pincode
+                  ? "border border-red-500"
+                  : "border border-gray-300 focus:border-cyan-500"
+              }`}
             />
 
             <input
               type="text"
               name="mobileNumber"
               value={addressInfo.mobileNumber}
-              onChange={(e) =>
-                setAddressInfo({ ...addressInfo, mobileNumber: e.target.value })
-              }
+              onChange={(e) => {
+                setAddressInfo({
+                  ...addressInfo,
+                  mobileNumber: e.target.value,
+                });
+                setErrors({ ...errors, mobileNumber: false });
+              }}
               placeholder="Teléfono"
-              className="w-full rounded-md border border-gray-300 px-3 py-2 outline-none focus:border-cyan-500 placeholder-gray-400"
+              className={`w-full rounded-md px-3 py-2 outline-none placeholder-gray-400 ${
+                errors.mobileNumber
+                  ? "border border-red-500"
+                  : "border border-gray-300 focus:border-cyan-500"
+              }`}
             />
           </div>
 
@@ -127,12 +153,7 @@ const BuyNowModal = ({ addressInfo, setAddressInfo, buyNowFunction }) => {
                 handleOpen();
                 buyNowFunction(createPreference);
               }}
-              disabled={!isFormValid}
-              className={`w-full px-4 py-2 text-white rounded-md shadow ${
-                !isFormValid
-                  ? "bg-gray-300 cursor-not-allowed"
-                  : "bg-cyan-600 hover:bg-cyan-700"
-              }`}
+              className="w-full px-4 py-2 text-white rounded-md shadow bg-cyan-600 hover:bg-cyan-700"
             >
               Confirmar compra
             </Button>

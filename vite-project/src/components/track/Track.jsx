@@ -22,11 +22,16 @@ const Features = () => {
 
         {/* Feature 3 */}
         <div className="flex flex-col items-center space-y-2">
-          <MessageCircle className="w-10 h-10 text-black" />
-          <h4 className="font-bold">¿TENÉS DUDAS?</h4>
-          <p className="text-sm text-gray-700">
-            ¡Escribinos a nuestro WhatsApp!
-          </p>
+          <a
+            href="https://wa.me/541136713215"
+            className="flex flex-col items-center space-y-2"
+          >
+            <MessageCircle className="w-10 h-10 text-black" />
+            <h4 className="font-bold">¿TENÉS DUDAS?</h4>
+            <p className="text-sm text-gray-700">
+              ¡Escribinos a nuestro WhatsApp!
+            </p>
+          </a>
         </div>
 
         {/* Feature 4 */}

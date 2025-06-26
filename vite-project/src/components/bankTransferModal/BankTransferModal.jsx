@@ -1,4 +1,3 @@
-// components/bankTransferModal/BankTransferModal.jsx
 import { useState } from "react";
 import {
   Dialog,
@@ -16,6 +15,7 @@ import { useSelector } from "react-redux";
 const BankTransferModal = ({ addressInfo, setAddressInfo, shippingCost }) => {
   const [open, setOpen] = useState(false);
   const [showCBU, setShowCBU] = useState(false);
+  const [errors, setErrors] = useState({});
 
   const cartItems = useSelector((state) => state.cart);
   const user = JSON.parse(localStorage.getItem("users"));
@@ -29,21 +29,31 @@ const BankTransferModal = ({ addressInfo, setAddressInfo, shippingCost }) => {
   const handleOpen = () => {
     setShowCBU(false);
     setOpen(!open);
+    setErrors({});
   };
 
   const handleConfirm = async () => {
-    if (
-      !addressInfo.name ||
-      !addressInfo.address ||
-      !addressInfo.pincode ||
-      !addressInfo.mobileNumber
-    ) {
-      return toast.error("Todos los campos son requeridos");
+    const nameRegex = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/;
+    const addressRegex = /^[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ\s,.-]+$/;
+    const pincodeRegex = /^[0-9]{4,10}$/;
+    const mobileRegex = /^[0-9]{6,15}$/;
+
+    const newErrors = {
+      name: !nameRegex.test(addressInfo.name),
+      address: !addressRegex.test(addressInfo.address),
+      pincode: !pincodeRegex.test(addressInfo.pincode),
+      mobileNumber: !mobileRegex.test(addressInfo.mobileNumber),
+    };
+
+    setErrors(newErrors);
+
+    if (Object.values(newErrors).some((error) => error)) {
+      return toast.error("Completá los campos correctamente");
     }
 
     if (shippingCost === 0) {
       toast.error("Debés seleccionar una opción de envío");
-      setOpen(false); // Cierra el modal
+      setOpen(false);
       return;
     }
 
@@ -129,33 +139,45 @@ const BankTransferModal = ({ addressInfo, setAddressInfo, shippingCost }) => {
               <Input
                 label="Nombre"
                 value={addressInfo.name}
-                onChange={(e) =>
-                  setAddressInfo({ ...addressInfo, name: e.target.value })
-                }
+                onChange={(e) => {
+                  setAddressInfo({ ...addressInfo, name: e.target.value });
+                  setErrors({ ...errors, name: false });
+                }}
+                className={errors.name ? "border-red-500" : ""}
+                error={errors.name}
               />
               <Input
                 label="Dirección"
                 value={addressInfo.address}
-                onChange={(e) =>
-                  setAddressInfo({ ...addressInfo, address: e.target.value })
-                }
+                onChange={(e) => {
+                  setAddressInfo({ ...addressInfo, address: e.target.value });
+                  setErrors({ ...errors, address: false });
+                }}
+                className={errors.address ? "border-red-500" : ""}
+                error={errors.address}
               />
               <Input
                 label="Código Postal"
                 value={addressInfo.pincode}
-                onChange={(e) =>
-                  setAddressInfo({ ...addressInfo, pincode: e.target.value })
-                }
+                onChange={(e) => {
+                  setAddressInfo({ ...addressInfo, pincode: e.target.value });
+                  setErrors({ ...errors, pincode: false });
+                }}
+                className={errors.pincode ? "border-red-500" : ""}
+                error={errors.pincode}
               />
               <Input
                 label="Celular"
                 value={addressInfo.mobileNumber}
-                onChange={(e) =>
+                onChange={(e) => {
                   setAddressInfo({
                     ...addressInfo,
                     mobileNumber: e.target.value,
-                  })
-                }
+                  });
+                  setErrors({ ...errors, mobileNumber: false });
+                }}
+                className={errors.mobileNumber ? "border-red-500" : ""}
+                error={errors.mobileNumber}
               />
             </div>
           )}
