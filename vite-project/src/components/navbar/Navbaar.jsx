@@ -72,7 +72,7 @@ const Navbar = () => {
 
         {/* Logo centro */}
         <Link to="/">
-          <img className="h-12" src="/logo1.png" alt="Logo" />
+          <img className="h-12" src="/logo3.png" alt="Logo" />
         </Link>
 
         {/* Carrito y modo oscuro derecha */}
@@ -182,7 +182,7 @@ const Navbar = () => {
         {/* Center: Logo */}
         <div className="w-1/3 flex justify-center">
           <Link to="/">
-            <img className="h-16 w-auto" src="/logo1.png" alt="Logo" />
+            <img className="h-16 w-auto" src="/logo3.png" alt="Logo" />
           </Link>
         </div>
 

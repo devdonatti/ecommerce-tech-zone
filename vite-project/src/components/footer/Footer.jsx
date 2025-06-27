@@ -15,7 +15,7 @@ const Footer = () => {
       {/* Logo centrado arriba en mobile */}
       <div className="py-8 text-center lg:hidden">
         <Link to="/">
-          <img src="/logo1.png" alt="Logo" className="h-14 mx-auto" />
+          <img src="/logo3.png" alt="Logo" className="h-14 mx-auto" />
         </Link>
       </div>
 
@@ -24,7 +24,7 @@ const Footer = () => {
         {/* Logo en desktop */}
         <div className="hidden lg:block">
           <Link to="/">
-            <img src="/logo1.png" alt="Logo" className="h-16" />
+            <img src="/logo3.png" alt="Logo" className="h-24" />
           </Link>
         </div>
 
@@ -55,12 +55,14 @@ const Footer = () => {
                 target="_blank"
                 rel="noreferrer"
               >
-                WhatsApp +5411-3671-3215
+                WhatsApp +54 11-3671-3215
               </a>
             </li>
             <li className="flex items-center gap-2">
               <Mail size={16} />
-              <a href="mailto:info@techzone.com.ar">ventas@vikingtech.com.ar</a>
+              <a href="mailto:ventas@vikingtech.com.ar">
+                ventas@vikingtech.com.ar
+              </a>
             </li>
           </ul>
         </div>
@@ -78,6 +80,7 @@ const Footer = () => {
               <Instagram size={20} />
             </a>
             <a
+              target="_blank"
               href="https://www.facebook.com/profile.php?id=61577699343940"
               className="bg-black text-white p-2 rounded-full hover:bg-gray-800 transition"
             >
