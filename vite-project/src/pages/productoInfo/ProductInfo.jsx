@@ -11,9 +11,9 @@ import toast from "react-hot-toast";
 import { initMercadoPago, Wallet } from "@mercadopago/sdk-react";
 import axios from "axios";
 
-initMercadoPago("APP_USR-81e7d767-9d1d-4229-afb3-d82f1fd5ed86", {
+initMercadoPago("APP_USR-84634554-b65e-4d73-8dee-c07d4962e39b ", {
   locale: "es-AR",
-});
+}); // CLIENT iD
 
 const ProductInfo = () => {
   const [preferenceId, setPreferenceId] = useState(null);

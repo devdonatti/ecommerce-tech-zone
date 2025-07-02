@@ -9,7 +9,7 @@ console.log("Token MercadoPago:", process.env.MERCADOPAGO_ACCESS_TOKEN);
 // Configuración del cliente de MercadoPago
 const client = new MercadoPagoConfig({
   accessToken: process.env.MERCADOPAGO_ACCESS_TOKEN,
-});
+}); // ACCESS TOKEN
 
 const app = express();
 
