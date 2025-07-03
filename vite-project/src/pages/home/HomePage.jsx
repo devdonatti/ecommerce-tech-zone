@@ -10,8 +10,9 @@ const HomePage = () => {
     <div className="bg-white dark:bg-black text-black dark:text-white min-h-screen overflow-x-hidden w-full transition-colors duration-300">
       <Layout>
         <HeroSection />
-        <Track />
+
         <HomePageProductCard />
+        <Track />
       </Layout>
     </div>
   );

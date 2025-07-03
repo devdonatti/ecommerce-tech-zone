@@ -281,8 +281,8 @@ const CartPage = () => {
                           type="radio"
                           name="shipping"
                           value="1500"
-                          checked={shippingCost === 1500}
-                          onChange={() => setShippingCost(1500)}
+                          checked={shippingCost === 5}
+                          onChange={() => setShippingCost(5)}
                         />
                       </label>
                       <label className="flex items-center justify-between">
