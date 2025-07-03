@@ -66,7 +66,8 @@ const ProductInfo = () => {
   const dispatch = useDispatch();
 
   const addCart = (item) => {
-    dispatch(addToCart(item));
+    const itemWithQuantity = { ...item, quantity: 1 };
+    dispatch(addToCart(itemWithQuantity));
     toast.success("Agregado al carrito");
   };
 

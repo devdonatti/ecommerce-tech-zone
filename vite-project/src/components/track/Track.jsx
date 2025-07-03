@@ -7,22 +7,23 @@ const Features = () => {
         {/* Feature 1 */}
         <div className="flex flex-col items-center space-y-2">
           <CreditCard className="w-10 h-10 text-black" />
-          <h4 className="font-bold">6 CUOTAS</h4>
+          <h4 className="font-bold">12 CUOTAS</h4>
           <p className="text-sm text-gray-700">Sin interés</p>
         </div>
 
         {/* Feature 2 */}
         <div className="flex flex-col items-center space-y-2">
           <Truck className="w-10 h-10 text-black" />
-          <h4 className="font-bold">¡ENVÍOS EN EL DÍA!</h4>
+          <h4 className="font-bold">¡ENVÍOS A TODO EL PAIS!</h4>
           <p className="text-sm text-gray-700">
-            En CABA y GBA. Envíos a todo el país.
+            Antes de las 13hs. Envíos en el día.
           </p>
         </div>
 
         {/* Feature 3 */}
         <div className="flex flex-col items-center space-y-2">
           <a
+            target="_blank"
             href="https://wa.me/541136713215"
             className="flex flex-col items-center space-y-2"
           >
@@ -37,8 +38,8 @@ const Features = () => {
         {/* Feature 4 */}
         <div className="flex flex-col items-center space-y-2">
           <Percent className="w-10 h-10 text-black" />
-          <h4 className="font-bold">20% DE DESCUENTO</h4>
-          <p className="text-sm text-gray-700">Pagando al contado</p>
+          <h4 className="font-bold">15% DE DESCUENTO</h4>
+          <p className="text-sm text-gray-700">Pagando por transferencia</p>
         </div>
       </div>
     </section>

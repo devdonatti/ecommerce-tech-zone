@@ -32,7 +32,7 @@ const AdminDashboard = () => {
         <div className="flex justify-center mb-4">
           <img
             className="w-20 h-20 rounded-full border border-black"
-            src="/logo1.png"
+            src="/logo3.png"
             alt="Logo"
           />
         </div>

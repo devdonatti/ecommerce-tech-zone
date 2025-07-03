@@ -11,7 +11,7 @@ export const cartSlice = createSlice({
       // Si el producto ya está en el carrito, solo actualiza la cantidad
       const existingItem = state.find((item) => item.id === action.payload.id);
       if (existingItem) {
-        existingItem.quantity += action.payload.quantity; // Se puede pasar la cantidad directamente
+        existingItem.quantity += Number(action.payload.quantity || 1); // Se puede pasar la cantidad directamente
       } else {
         state.push(action.payload);
       }

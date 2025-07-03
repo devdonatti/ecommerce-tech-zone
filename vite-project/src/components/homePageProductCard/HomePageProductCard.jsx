@@ -37,7 +37,7 @@ const HomePageProductCard = () => {
   const dispatch = useDispatch();
 
   const addCart = (item) => {
-    dispatch(addToCart(item));
+    dispatch(addToCart({ ...item, quantity: 1 }));
     toast.success("Agregado al carrito");
   };
 
@@ -112,7 +112,7 @@ const HomePageProductCard = () => {
 
                       {/* Precio con transferencia */}
                       <p className="text-xs text-green-600 dark:text-green-400 font-medium">
-                        ${Math.round(price * 0.9).toLocaleString("es-AR")} con
+                        ${Math.round(price * 0.85).toLocaleString("es-AR")} con
                         transferencia
                       </p>
 
