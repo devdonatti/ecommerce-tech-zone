@@ -10,6 +10,10 @@ const categoryList = [
   { name: "pc" },
   { name: "monitores" },
   { name: "perifericos" },
+  { name: "notebooks" },
+  { name: "componentes" },
+  { name: "gabinetes" },
+  { name: "Mundo Gamer" },
 ];
 
 const AddProductPage = () => {

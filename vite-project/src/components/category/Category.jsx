@@ -4,15 +4,19 @@ import { useNavigate } from "react-router-dom";
 const categories = [
   {
     name: "pc",
-    subcategories: ["Cámaras", "Sensores", "Fuentes"],
+    subcategories: ["Notebooks", "Monitores", "Gabinetes"],
   },
   {
     name: "perifericos",
-    subcategories: ["Alarmas", "DVR", "CCTV"],
+    subcategories: ["Mouses"],
   },
   {
-    name: "monitores",
-    subcategories: ["Parlantes", "Micrófonos", "Auriculares"],
+    name: "Mundo Gamer",
+    subcategories: ["Parlantes", "Auriculares"],
+  },
+  {
+    name: "Componentes",
+    subcategories: ["Parlantes", "Auriculares"],
   },
 ];
 

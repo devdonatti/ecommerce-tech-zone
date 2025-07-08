@@ -26,6 +26,14 @@ const categories = [
     name: "monitores",
     subcategories: ["Parlantes", "Micrófonos", "Auriculares"],
   },
+  {
+    name: "Mundo Gamer",
+    subcategories: ["Parlantes", "Micrófonos", "Auriculares"],
+  },
+  {
+    name: "monitores",
+    subcategories: ["Parlantes", "Micrófonos", "Auriculares"],
+  },
 ];
 
 const Navbar = () => {

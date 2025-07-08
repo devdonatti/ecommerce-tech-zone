@@ -103,7 +103,7 @@ const BankTransferModal = ({ addressInfo, setAddressInfo, shippingCost }) => {
           {showCBU ? (
             <div className="space-y-4 text-sm">
               <p>
-                <strong>CBU:</strong> 0000003100029002166741{" "}
+                <strong>CBU:</strong>{" "}
                 <button
                   onClick={copyToClipboard}
                   className="ml-2 text-blue-500 underline text-xs"
@@ -112,7 +112,7 @@ const BankTransferModal = ({ addressInfo, setAddressInfo, shippingCost }) => {
                 </button>
               </p>
               <p>
-                <strong>Alias:</strong> techzone.transfer
+                <strong>Alias:</strong> viking10
               </p>
 
               <p className="text-green-700 mt-4">
