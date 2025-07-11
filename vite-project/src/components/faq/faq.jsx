@@ -6,7 +6,7 @@ const faqs = [
   {
     question: "¿Tienen local físico?",
     answer:
-      "No, Tech Zone funciona 100% online. Podés hacer tu compra desde la comodidad de tu casa.",
+      "No, VikingTech funciona 100% online. Podés hacer tu compra desde la comodidad de tu casa.",
   },
   {
     question: "¿Tengo que registrarme para comprar?",
@@ -16,17 +16,17 @@ const faqs = [
   {
     question: "¿Qué medios de pago aceptan?",
     answer:
-      "Podés pagar con tarjeta de débito o crédito a través de Mercado Pago. También aceptamos transferencias directas al CBU de Tech Zone.",
+      "Podés pagar con tarjeta de débito o crédito a través de Mercado Pago. También aceptamos transferencias directas al CBU de VikingTech.",
   },
   {
     question: "¿Qué pasa después de que pago?",
     answer:
-      "Una vez recibido el pago, el equipo de Tech Zone se va a contactar con vos para coordinar el envío o entrega del producto.",
+      "Una vez recibido el pago, el equipo de VikingTech se va a contactar con vos para coordinar el envío o entrega del producto.",
   },
   {
     question: "¿Cuanto tarda en llegar mi producto?",
     answer:
-      "Una vez recibido el pago, el equipo de Tech Zone despachará el producto el mismo dia, o el siguiente",
+      "Una vez recibido el pago, el equipo de VikingTech despachará el producto el mismo dia, o el siguiente",
   },
 ];
 

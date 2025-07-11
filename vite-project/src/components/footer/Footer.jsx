@@ -115,7 +115,7 @@ const Footer = () => {
 
       {/* Legal y autoría */}
       <div className="bg-black text-white text-xs text-center py-4 px-6 space-y-1">
-        <p>Copyright Tech Zone - 2025. Todos los derechos reservados.</p>
+        <p>Copyright VikingTech - 2025. Todos los derechos reservados.</p>
 
         <p className="mt-2">
           Powered by{" "}

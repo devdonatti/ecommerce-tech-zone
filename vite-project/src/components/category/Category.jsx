@@ -3,8 +3,8 @@ import { useNavigate } from "react-router-dom";
 
 const categories = [
   {
-    name: "pc",
-    subcategories: ["Notebooks", "Monitores", "Gabinetes"],
+    name: "Notebooks",
+    subcategories: ["Notebooks Gamer", "Notebooks Básicas", "Gabinetes"],
   },
   {
     name: "perifericos",
@@ -47,6 +47,18 @@ const Category = () => {
       {/* Mobile menu */}
       {isOpen && (
         <div className="lg:hidden px-4 pb-4">
+          {/* Botón Productos (todos) */}
+          <div
+            className="mb-2 font-semibold cursor-pointer hover:text-cyan-600 dark:hover:text-cyan-400"
+            onClick={() => {
+              navigate("/productos");
+              toggleMenu();
+            }}
+          >
+            Productos
+          </div>
+
+          {/* Categorías */}
           {categories.map((cat, idx) => (
             <div key={idx} className="mb-2">
               <div
@@ -81,6 +93,17 @@ const Category = () => {
 
       {/* Desktop menu */}
       <div className="hidden lg:flex justify-center space-x-6 py-3 text-sm font-light relative z-50">
+        {/* Botón Productos (todos) */}
+        <div className="relative group">
+          <button
+            className="hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors duration-200 capitalize"
+            onClick={() => navigate("/productos")}
+          >
+            Productos
+          </button>
+        </div>
+
+        {/* Categorías */}
         {categories.map((cat, idx) => (
           <div
             key={idx}

@@ -99,22 +99,25 @@ const HomePageProductCard = () => {
                       <h2 className="text-sm font-medium text-gray-800 dark:text-gray-100 truncate">
                         {title}
                       </h2>
-
-                      {/* Precio original tachado */}
                       <p className="text-xs text-gray-400 dark:text-gray-500 line-through">
-                        ${Math.round(price * 1.1).toLocaleString("es-AR")}
+                        ${Math.round(price * 1.25).toLocaleString("es-AR")}{" "}
                       </p>
 
-                      {/* Precio actual */}
-                      <p className="text-lg font-bold text-gray-900 dark:text-white">
-                        ${Number(price).toLocaleString("es-AR")}
+                      {/* Precio con transferencia o débito - Principal */}
+                      <p className="text-xl font-bold text-white dark:text-white">
+                        ${Math.round(price * 0.85).toLocaleString("es-AR")}
+                        <span className="text-sm font-normal text-green-400 ml-1">
+                          débito o transferencia
+                        </span>
                       </p>
 
-                      {/* Precio con transferencia */}
-                      <p className="text-xs text-green-600 dark:text-green-400 font-medium">
-                        ${Math.round(price * 0.85).toLocaleString("es-AR")} con
-                        transferencia
+                      {/* Precio en cuotas */}
+                      <p className="text-sm text-gray-500 dark:text-gray-400">
+                        ${Math.round(price * 1.1).toLocaleString("es-AR")}{" "}
+                        crédito
                       </p>
+
+                      {/* Precio de lista tachado */}
 
                       {/* Botones */}
                       <div className="flex flex-col gap-2 mt-3">

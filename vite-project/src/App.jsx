@@ -19,6 +19,7 @@ import CategoryPage from "./pages/category/CategoryPage";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import FAQ from "./components/faq/faq.jsx";
+import AllProductsPage from "./pages/home/AllProductsPage.jsx";
 
 const App = () => {
   return (
@@ -36,6 +37,7 @@ const App = () => {
             <Route path="/signup" element={<Signup />} />
             <Route path="/login" element={<Login />} />
             <Route path="/faq" element={<FAQ />} />
+            <Route path="/productos" element={<AllProductsPage />} />
             <Route
               path="/category/:categoryname"
               element={<CategoryPage />}

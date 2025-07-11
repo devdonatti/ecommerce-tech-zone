@@ -10,6 +10,7 @@ import { addToCart, deleteFromCart } from "../../redux/cartSlice";
 import toast from "react-hot-toast";
 import { initMercadoPago, Wallet } from "@mercadopago/sdk-react";
 import axios from "axios";
+import { CheckCircle, Truck, PackageCheck } from "lucide-react";
 
 initMercadoPago("APP_USR-84634554-b65e-4d73-8dee-c07d4962e39b ", {
   locale: "es-AR",
@@ -17,7 +18,7 @@ initMercadoPago("APP_USR-84634554-b65e-4d73-8dee-c07d4962e39b ", {
 
 const ProductInfo = () => {
   const [preferenceId, setPreferenceId] = useState(null);
-  const [mainImage, setMainImage] = useState(""); // para la galería
+  const [mainImage, setMainImage] = useState("");
   const context = useContext(myContext);
   const { loading, setLoading } = context;
 
@@ -54,7 +55,7 @@ const ProductInfo = () => {
       const productTemp = await getDoc(doc(fireDB, "products", id));
       const productData = { ...productTemp.data(), id: productTemp.id };
       setProduct(productData);
-      setMainImage(productData.productImageUrl); // setea imagen principal
+      setMainImage(productData.productImageUrl);
       setLoading(false);
     } catch (error) {
       console.log(error);
@@ -66,8 +67,7 @@ const ProductInfo = () => {
   const dispatch = useDispatch();
 
   const addCart = (item) => {
-    const itemWithQuantity = { ...item, quantity: 1 };
-    dispatch(addToCart(itemWithQuantity));
+    dispatch(addToCart({ ...item, quantity: 1 }));
     toast.success("Agregado al carrito");
   };
 
@@ -123,27 +123,41 @@ const ProductInfo = () => {
               {/* Info del producto */}
               <div className="md:w-1/2 space-y-4">
                 <h1 className="text-2xl font-semibold">{product?.title}</h1>
-                <div>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">
-                    Precio especial
+
+                {/* Precios actualizados */}
+                <div className="space-y-1">
+                  <p className="text-xl text-gray-400 dark:text-gray-500 line-through">
+                    ${Math.round(product?.price * 1.25).toLocaleString("es-AR")}{" "}
                   </p>
-                  <p className="text-3xl font-bold text-green-600">
-                    ${product?.price}
+                  <p className="text-3xl font-bold text-green-400 dark:text-green-400">
+                    ${Math.round(product?.price * 0.85).toLocaleString("es-AR")}
+                    <span className="text-sm text-green-400 font-medium ml-2">
+                      con débito o transferencia
+                    </span>
                   </p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">
-                    Hasta 6 cuotas sin interés
+                  <p className="text-base text-gray-500 dark:text-gray-400">
+                    ${Math.round(product?.price * 1.1).toLocaleString("es-AR")}{" "}
+                    en cuotas
                   </p>
                 </div>
+
+                {/* Características */}
                 <ul className="text-sm space-y-1 border-t pt-4">
                   <li className="flex items-center gap-2">
-                    <span className="text-green-500 font-bold">✔</span> Stock
-                    disponible
+                    <CheckCircle size={32} className="text-green-500" />
+                    Stock disponible
                   </li>
                   <li className="flex items-center gap-2">
-                    <span className="text-green-500 font-bold">🚚</span> Envíos
-                    a todo el país
+                    <Truck size={32} className="text-green-500" />
+                    Envíos a todo el país
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <PackageCheck size={32} className="text-green-500" />
+                    Retiro gratis
                   </li>
                 </ul>
+
+                {/* Botones */}
                 <div className="flex flex-col gap-3 pt-4">
                   {cartItems.some((p) => p.id === product.id) ? (
                     <button
