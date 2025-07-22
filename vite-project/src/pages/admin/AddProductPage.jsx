@@ -6,15 +6,77 @@ import { fireDB } from "../../firebase/FirebaseConfig";
 import { useNavigate } from "react-router";
 import Loader from "../../components/loader/Loader";
 
-const categoryList = [
-  { name: "pc" },
-  { name: "monitores" },
-  { name: "perifericos" },
-  { name: "notebooks" },
-  { name: "componentes" },
-  { name: "gabinetes" },
-  { name: "Mundo Gamer" },
-];
+const categoryData = {
+  "Componentes de PC": {
+    "": [
+      "Placas de Video",
+      "Motherboards",
+      "Microprocesadores",
+      "Discos SSD",
+      "Memorias RAM",
+      "Gabinetes",
+      "Fuentes",
+      "CPU Coolers - Coolers",
+      "Conectividad",
+    ],
+    Accesorios: ["Pasta térmica"],
+  },
+  Notebooks: {
+    Notebooks: ["Notebooks AMD", "Notebooks Intel"],
+    Almacenamiento: [
+      "Discos SSD",
+      "Discos Externos USB",
+      "Memorias SD - Pendrives",
+    ],
+    Accesorios: ["Mouse Inalámbricos", "Mochilas", "Pads"],
+    "Memorias RAM": ["Memorias RAM Sodimm"],
+  },
+  Periféricos: {
+    Auriculares: [
+      "Gamer",
+      "Estéreo",
+      "Surround",
+      "Para celular",
+      "Soporte de auriculares",
+    ],
+    Mouse: ["Gamer", "Inalámbrico"],
+    Teclados: ["Mecánicos", "Membrana", "RGB", "Combo"],
+    Pads: ["Small", "Medium", "Large"],
+    Parlantes: ["Parlantes"],
+    Joysticks: ["Joystick"],
+    "Volantes y Accesorios": ["Volantes"],
+    Webcams: ["WebCams"],
+    Impresoras: ["Tinta y tóner"],
+  },
+  Monitores: {
+    "": [
+      "Monitores LED",
+      'Monitores 21"',
+      'Monitores 24"',
+      'Monitores 27"',
+      'Monitores 32"',
+      "Monitores Curvos",
+    ],
+  },
+};
+
+const extractGroupedOptions = (data) => {
+  const result = [];
+  for (const [mainGroup, subGroups] of Object.entries(data)) {
+    const items = [];
+    for (const [key, values] of Object.entries(subGroups)) {
+      if (key !== "Accesorios") {
+        items.push(...values);
+      }
+    }
+    if (items.length > 0) {
+      result.push({ label: mainGroup, options: items });
+    }
+  }
+  return result;
+};
+
+const groupedCategories = extractGroupedOptions(categoryData);
 
 const AddProductPage = () => {
   const context = useContext(myContext);
@@ -70,14 +132,12 @@ const AddProductPage = () => {
       {loading && <Loader />}
 
       <div className="w-full max-w-xl bg-black border border-fuchsia-700 rounded-2xl shadow-xl flex flex-col overflow-hidden h-[90vh]">
-        {/* Header */}
         <div className="px-6 pt-6">
           <h2 className="text-center text-2xl font-extrabold text-white tracking-wide mb-4">
             Agregar producto
           </h2>
         </div>
 
-        {/* Scrollable form */}
         <div className="px-6 pb-4 overflow-y-auto flex-grow">
           <Input
             placeholder="Título del producto"
@@ -111,7 +171,6 @@ const AddProductPage = () => {
             }
           />
 
-          {/* Categoría */}
           <div className="mb-3">
             <label className="text-white text-sm font-medium mb-1 block">
               Categoría
@@ -127,10 +186,27 @@ const AddProductPage = () => {
                 <option disabled value="">
                   Seleccionar categoría
                 </option>
-                {categoryList.map((item, index) => (
-                  <option key={index} value={item.name}>
-                    {item.name}
-                  </option>
+
+                {Object.entries(categoryData).map(([group, subgroups]) => (
+                  <optgroup key={group} label={group}>
+                    {Object.entries(subgroups).flatMap(
+                      ([subgroupName, items]) =>
+                        items.map((item) => {
+                          // Si el nombre de subgrupo es cadena vacía, solo muestro el item
+                          const optionLabel = subgroupName
+                            ? `${subgroupName} - ${item}`
+                            : item;
+                          return (
+                            <option
+                              key={`${subgroupName}-${item}`}
+                              value={optionLabel}
+                            >
+                              {optionLabel}
+                            </option>
+                          );
+                        })
+                    )}
+                  </optgroup>
                 ))}
               </select>
               <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-white">
@@ -179,7 +255,6 @@ const AddProductPage = () => {
           />
         </div>
 
-        {/* Botón fijo */}
         <div className="px-6 py-4 border-t border-fuchsia-800">
           <button
             onClick={addProductFunction}
@@ -193,7 +268,6 @@ const AddProductPage = () => {
   );
 };
 
-// 🌌 Input oscuro con acento tech
 const Input = ({ type = "text", ...props }) => (
   <div className="mb-3">
     <input

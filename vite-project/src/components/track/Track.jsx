@@ -14,7 +14,7 @@ const Features = () => {
         {/* Feature 2 */}
         <div className="flex flex-col items-center space-y-2">
           <Truck className="w-10 h-10 text-black" />
-          <h4 className="font-bold">¡ENVÍOS A TODO EL PAIS!</h4>
+          <h4 className="font-bold">¡ENVÍOS GRATIS A TODO EL PAÍS!</h4>
           <p className="text-sm text-gray-700">
             Antes de las 13hs. Envíos en el día.
           </p>
@@ -24,7 +24,7 @@ const Features = () => {
         <div className="flex flex-col items-center space-y-2">
           <a
             target="_blank"
-            href="https://wa.me/541136713215"
+            href="https://wa.me/541154105141"
             className="flex flex-col items-center space-y-2"
           >
             <MessageCircle className="w-10 h-10 text-black" />

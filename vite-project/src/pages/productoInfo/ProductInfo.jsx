@@ -189,11 +189,13 @@ const ProductInfo = () => {
             </div>
 
             {/* Descripción */}
-            <div className="mt-12 border-t pt-6">
-              <h2 className="text-lg font-bold mb-2">
+            <div className="mt-6">
+              <h3 className="text-lg font-bold mb-2">
                 Descripción del producto
-              </h2>
-              <p className="text-sm leading-relaxed">{product?.description}</p>
+              </h3>
+              <p className="whitespace-pre-line text-sm text-gray-700">
+                {product?.description || "Sin descripción"}
+              </p>
             </div>
 
             {/* Especificaciones */}
@@ -201,7 +203,7 @@ const ProductInfo = () => {
               <h3 className="text-lg font-bold mb-3">
                 Especificaciones del producto
               </h3>
-              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 text-sm">
+              <div className="flex flex-col gap-4 text-sm">
                 <div>
                   <p className="font-semibold">Marca:</p>
                   <p>{product?.brand || "Sin especificar"}</p>

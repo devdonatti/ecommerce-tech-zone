@@ -17,8 +17,7 @@ import axios from "axios";
 
 const CartPage = () => {
   const [errors, setErrors] = useState({});
-
-  const [shippingCost, setShippingCost] = useState(0);
+  const [shippingCost, setShippingCost] = useState(0); // Envío gratis por defecto
   const cartItems = useSelector((state) => state.cart);
   const dispatch = useDispatch();
 
@@ -52,10 +51,6 @@ const CartPage = () => {
   };
 
   const buyCart = async () => {
-    if (shippingCost === 0) {
-      return toast.error("Seleccioná una opción de envío");
-    }
-
     const initPoint = await createPreference();
     if (initPoint) {
       window.location.href = initPoint;
@@ -123,10 +118,6 @@ const CartPage = () => {
 
     if (Object.values(newErrors).some((error) => error)) {
       return toast.error("Completá los campos correctamente");
-    }
-
-    if (shippingCost === 0) {
-      return toast.error("Seleccioná una opción de envío");
     }
 
     const orderInfo = {
@@ -252,7 +243,7 @@ const CartPage = () => {
                 Detalle
               </h2>
               <div>
-                <dl className=" space-y-1 px-2 py-4">
+                <dl className="space-y-1 px-2 py-4">
                   <div className="flex items-center justify-between">
                     <dt className="text-sm text-gray-800">
                       Precio ({cartItemTotal} items)
@@ -262,59 +253,16 @@ const CartPage = () => {
                     </dd>
                   </div>
 
-                  <div className="py-4">
-                    <dt className="text-sm text-gray-800 mb-2">Envío</dt>
-                    <div className="space-y-2 text-sm">
-                      <label className="flex items-center justify-between">
-                        <span>CABA</span>
-                        <input
-                          type="radio"
-                          name="shipping"
-                          value="1000"
-                          checked={shippingCost === 1000}
-                          onChange={() => setShippingCost(1000)}
-                        />
-                      </label>
-                      <label className="flex items-center justify-between">
-                        <span>Provincia de Buenos Aires</span>
-                        <input
-                          type="radio"
-                          name="shipping"
-                          value="1500"
-                          checked={shippingCost === 5}
-                          onChange={() => setShippingCost(5)}
-                        />
-                      </label>
-                      <label className="flex items-center justify-between">
-                        <span>Interior del país</span>
-                        <input
-                          type="radio"
-                          name="shipping"
-                          value="2000"
-                          checked={shippingCost === 2000}
-                          onChange={() => setShippingCost(2000)}
-                        />
-                      </label>
-                    </div>
-                  </div>
-
-                  {shippingCost > 0 && (
-                    <div className="flex items-center justify-between">
-                      <dt className="text-sm text-gray-800">Costo de envío</dt>
-                      <dd className="text-sm font-medium text-gray-900">
-                        $ {shippingCost}
-                      </dd>
-                    </div>
-                  )}
-
                   <div className="flex items-center justify-between border-y border-dashed py-4 mt-2">
                     <dt className="text-base font-medium text-gray-900">
                       Total
                     </dt>
                     <dd className="text-base font-medium text-gray-900">
-                      $ {cartTotal + shippingCost}
+                      $ {cartTotal}
                     </dd>
                   </div>
+
+                  <p className="text-green-600 text-sm mt-2">Envío gratis</p>
                 </dl>
 
                 <div className="px-2 pb-4 font-medium text-green-700">
@@ -329,7 +277,7 @@ const CartPage = () => {
                     <BankTransferModal
                       addressInfo={addressInfo}
                       setAddressInfo={setAddressInfo}
-                      shippingCost={shippingCost}
+                      shippingCost={0}
                     />
                   </div>
                 </div>

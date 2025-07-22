@@ -6,11 +6,60 @@ import { fireDB } from "../../firebase/FirebaseConfig";
 import toast from "react-hot-toast";
 import Loader from "../../components/loader/Loader";
 
-const categoryList = [
-  { name: "pc" },
-  { name: "monitores" },
-  { name: "perifericos" },
-];
+// Estructura agrupada de categorías con optgroups
+const categoryData = {
+  "Componentes de PC": {
+    "": [
+      "Placas de Video",
+      "Motherboards",
+      "Microprocesadores",
+      "Discos SSD",
+      "Memorias RAM",
+      "Gabinetes",
+      "Fuentes",
+      "CPU Coolers - Coolers",
+      "Conectividad",
+    ],
+    Accesorios: ["Pasta térmica"],
+  },
+  Notebooks: {
+    Notebooks: ["Notebooks AMD", "Notebooks Intel"],
+    Almacenamiento: [
+      "Discos SSD",
+      "Discos Externos USB",
+      "Memorias SD - Pendrives",
+    ],
+    Accesorios: ["Mouse Inalámbricos", "Mochilas", "Pads"],
+    "Memorias RAM": ["Memorias RAM Sodimm"],
+  },
+  Periféricos: {
+    Auriculares: [
+      "Gamer",
+      "Estéreo",
+      "Surround",
+      "Para celular",
+      "Soporte de auriculares",
+    ],
+    Mouse: ["Gamer", "Inalámbrico"],
+    Teclados: ["Mecánicos", "Membrana", "RGB", "Combo"],
+    Pads: ["Small", "Medium", "Large"],
+    Parlantes: ["Parlantes"],
+    Joysticks: ["Joystick"],
+    "Volantes y Accesorios": ["Volantes"],
+    Webcams: ["WebCams"],
+    Impresoras: ["Tinta y tóner"],
+  },
+  Monitores: {
+    "": [
+      "Monitores LED",
+      'Monitores 21"',
+      'Monitores 24"',
+      'Monitores 27"',
+      'Monitores 32"',
+      "Monitores Curvos",
+    ],
+  },
+};
 
 const UpdateProductPage = () => {
   const context = useContext(myContext);
@@ -158,12 +207,30 @@ const UpdateProductPage = () => {
                 <option disabled value="">
                   Seleccionar categoría
                 </option>
-                {categoryList.map((item, index) => (
-                  <option key={index} value={item.name}>
-                    {item.name}
-                  </option>
+
+                {Object.entries(categoryData).map(([group, subgroups]) => (
+                  <optgroup key={group} label={group}>
+                    {Object.entries(subgroups).flatMap(
+                      ([subgroupName, items]) =>
+                        items.map((item) => {
+                          // Si el nombre de subgrupo es cadena vacía, solo muestro el item
+                          const optionLabel = subgroupName
+                            ? `${subgroupName} - ${item}`
+                            : item;
+                          return (
+                            <option
+                              key={`${subgroupName}-${item}`}
+                              value={optionLabel}
+                            >
+                              {optionLabel}
+                            </option>
+                          );
+                        })
+                    )}
+                  </optgroup>
                 ))}
               </select>
+
               <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-white">
                 <svg
                   className="w-4 h-4"

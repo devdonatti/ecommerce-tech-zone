@@ -1,17 +1,10 @@
-import {
-  Facebook,
-  Instagram,
-  Youtube,
-  Mail,
-  Phone,
-  MapPin,
-} from "lucide-react";
+import { Facebook, Instagram, Mail, Phone } from "lucide-react";
 import { Link } from "react-router-dom";
-import { MessageCircle, PhoneCall } from "lucide-react";
+import { MessageCircle } from "lucide-react";
 
 const Footer = () => {
   return (
-    <footer className="bg-[#e5e5e5] text-black text-sm mt-12 dark:bg-gray-900  dark:text-white">
+    <footer className="bg-[#e5e5e5] text-black text-sm mt-12 dark:bg-gray-900 dark:text-white">
       {/* Logo centrado arriba en mobile */}
       <div className="py-8 text-center lg:hidden">
         <Link to="/">
@@ -20,47 +13,35 @@ const Footer = () => {
       </div>
 
       {/* Contenido principal */}
-      <div className="max-w-7xl mx-auto px-6 py-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-8">
+      <div className="max-w-7xl mx-auto px-6 py-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-8 text-center lg:text-left">
         {/* Logo en desktop */}
-        <div className="hidden lg:block">
+        <div className="hidden lg:flex justify-center items-center">
           <Link to="/">
             <img src="/logo3.png" alt="Logo" className="h-24" />
           </Link>
         </div>
 
-        {/* Categorías */}
-        <div>
-          <h3 className="font-bold text-lg mb-3">Categorías</h3>
-          <ul className="space-y-2">
-            {["Pc", "Perifericos", "Monitores"].map((cat, i) => (
-              <Link
-                key={i}
-                to={`/category/${cat.toLowerCase()}`}
-                className="block hover:underline"
-              >
-                {cat}
-              </Link>
-            ))}
-          </ul>
-        </div>
-
         {/* Contacto */}
-        <div>
+        <div className="flex flex-col items-center lg:items-start">
           <h3 className="font-bold text-lg mb-3">Contáctanos</h3>
           <ul className="space-y-3">
-            <li className="flex items-center gap-2">
+            <li className="flex items-center gap-2 justify-center lg:justify-start">
               <Phone size={16} />
               <a
                 href="https://wa.me/541136713215"
                 target="_blank"
                 rel="noreferrer"
+                className="hover:underline"
               >
-                WhatsApp +54 11-3671-3215
+                WhatsApp +54 11-5410-5141
               </a>
             </li>
-            <li className="flex items-center gap-2">
+            <li className="flex items-center gap-2 justify-center lg:justify-start">
               <Mail size={16} />
-              <a href="mailto:ventas@vikingtech.com.ar">
+              <a
+                href="mailto:ventas@vikingtech.com.ar"
+                className="hover:underline"
+              >
                 ventas@vikingtech.com.ar
               </a>
             </li>
@@ -68,9 +49,9 @@ const Footer = () => {
         </div>
 
         {/* Redes Sociales */}
-        <div>
+        <div className="flex flex-col items-center lg:items-start">
           <h3 className="font-bold text-lg mb-3">Sigamos conectados</h3>
-          <div className="flex gap-4">
+          <div className="flex gap-4 justify-center lg:justify-start">
             <a
               href="https://instagram.com"
               target="_blank"
@@ -87,7 +68,7 @@ const Footer = () => {
               <Facebook size={20} />
             </a>
             <a
-              href="https://wa.me/541136713215"
+              href="https://wa.me/541154105141"
               target="_blank"
               rel="noopener noreferrer"
               className="bg-black text-white p-2 rounded-full hover:bg-green-600 transition"
@@ -98,7 +79,7 @@ const Footer = () => {
         </div>
 
         {/* Pago y envío */}
-        <div>
+        <div className="flex flex-col items-center lg:items-start">
           <h3 className="font-bold text-lg mb-3">Medios de pago y envío</h3>
           <img
             src="/mp2.png"

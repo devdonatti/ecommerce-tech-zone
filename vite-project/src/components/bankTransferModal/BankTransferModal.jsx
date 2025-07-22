@@ -51,12 +51,6 @@ const BankTransferModal = ({ addressInfo, setAddressInfo, shippingCost }) => {
       return toast.error("Completá los campos correctamente");
     }
 
-    if (shippingCost === 0) {
-      toast.error("Debés seleccionar una opción de envío");
-      setOpen(false);
-      return;
-    }
-
     try {
       const orderInfo = {
         cartItems,

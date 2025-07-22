@@ -10,31 +10,62 @@ import {
   X,
 } from "lucide-react";
 import SearchBar from "../searchBar/SearchBar";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import useDarkMode from "../../hooks/useDarkMode";
 
-const categories = [
-  {
-    name: "pc",
-    subcategories: ["Cámaras", "Sensores", "Fuentes"],
+const categories = {
+  Notebooks: {
+    Notebooks: ["Notebooks AMD", "Notebooks Intel"],
+    Almacenamiento: [
+      "Discos SSD",
+      "Discos Externos USB",
+      "Memorias SD - Pendrives",
+    ],
+    Accesorios: ["Mouse Inalámbricos", "Mochilas", "Pads"],
+    "Memorias RAM": ["Memorias RAM Sodimm"],
   },
-  {
-    name: "perifericos",
-    subcategories: ["Alarmas", "DVR", "CCTV"],
+  "Componentes de PC": {
+    "": [
+      "Placas de Video",
+      "Motherboards",
+      "Microprocesadores",
+      "Discos SSD",
+      "Memorias RAM",
+      "Gabinetes",
+      "Fuentes",
+      "CPU Coolers - Coolers",
+      "Conectividad",
+    ],
+    Accesorios: ["Pasta térmica"],
   },
-  {
-    name: "monitores",
-    subcategories: ["Parlantes", "Micrófonos", "Auriculares"],
+  Periféricos: {
+    Auriculares: [
+      "Gamer",
+      "Estéreo",
+      "Surround",
+      "Para celular",
+      "Soporte de auriculares",
+    ],
+    Mouse: ["Gamer", "Inalámbrico"],
+    Teclados: ["Mecánicos", "Membrana", "RGB", "Combo"],
+    Pads: ["Small", "Medium", "Large"],
+    Parlantes: ["Parlantes"],
+    Joysticks: ["Joystick"],
+    "Volantes y Accesorios": ["Volantes"],
+    Webcams: ["WebCams"],
+    Impresoras: ["Tinta y tóner"],
   },
-  {
-    name: "Mundo Gamer",
-    subcategories: ["Parlantes", "Micrófonos", "Auriculares"],
+  Monitores: {
+    "": [
+      "Monitores LED",
+      'Monitores 21"',
+      'Monitores 24"',
+      'Monitores 27"',
+      'Monitores 32"',
+      "Monitores Curvos",
+    ],
   },
-  {
-    name: "monitores",
-    subcategories: ["Parlantes", "Micrófonos", "Auriculares"],
-  },
-];
+};
 
 const Navbar = () => {
   const storedUser = localStorage.getItem("users");
@@ -54,23 +85,34 @@ const Navbar = () => {
   const [showDropdown, setShowDropdown] = useState(false);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [submenuOpen, setSubmenuOpen] = useState(null);
+  const [hovered, setHovered] = useState(null);
+  const timeoutRef = useRef(null);
 
   const logout = () => {
     localStorage.clear("users");
     navigate("/");
   };
 
-  // Toggle submenu (categories)
+  // Toggle submenu para móvil
   const toggleSubmenu = (idx) => {
-    if (submenuOpen === idx) {
-      setSubmenuOpen(null);
-    } else {
-      setSubmenuOpen(idx);
-    }
+    if (submenuOpen === idx) setSubmenuOpen(null);
+    else setSubmenuOpen(idx);
+  };
+
+  // Hover submenu desktop
+  const handleMouseEnter = (cat) => {
+    clearTimeout(timeoutRef.current);
+    setHovered(cat);
+  };
+
+  const handleMouseLeave = () => {
+    timeoutRef.current = setTimeout(() => {
+      setHovered(null);
+    }, 200);
   };
 
   return (
-    <nav className="bg-black text-white  dark:text-white sticky top-0 z-50 shadow-md transition-colors duration-300">
+    <nav className="bg-black text-white dark:text-white sticky top-0 z-50 shadow-md transition-colors duration-300">
       {/* MOBILE header */}
       <div className="lg:hidden flex justify-between items-center px-4 py-3">
         {/* Menu hamburguesa izquierda */}
@@ -102,33 +144,45 @@ const Navbar = () => {
       {/* MOBILE menu desplegable */}
       {showMobileMenu && (
         <div className="lg:hidden bg-white dark:bg-black px-4 pb-4 text-black dark:text-white">
-          {categories.map((cat, idx) => (
+          {Object.entries(categories).map(([catName, subcats], idx) => (
             <div
-              key={idx}
+              key={catName}
               className="border-b border-gray-300 dark:border-gray-700 py-2"
             >
               <button
                 onClick={() => toggleSubmenu(idx)}
                 className="flex justify-between w-full font-semibold text-left"
               >
-                <span className="capitalize">{cat.name}</span>
+                <span className="capitalize">{catName}</span>
                 <span>{submenuOpen === idx ? "−" : "+"}</span>
               </button>
+
               {submenuOpen === idx && (
-                <ul className="mt-2 ml-4 space-y-1 text-sm">
-                  {cat.subcategories.map((sub, subIdx) => (
-                    <li
-                      key={subIdx}
-                      className="cursor-pointer text-gray-600 dark:text-gray-300 hover:text-cyan-500 transition-colors"
-                      onClick={() => {
-                        navigate(`/category/${sub}`);
-                        setShowMobileMenu(false);
-                      }}
-                    >
-                      {sub}
-                    </li>
+                <div className="ml-4 mt-2 space-y-2 text-sm">
+                  {Object.entries(subcats).map(([subcatTitle, subcatItems]) => (
+                    <div key={subcatTitle}>
+                      {subcatTitle !== "" && (
+                        <div className="text-cyan-500 font-semibold uppercase">
+                          {subcatTitle}
+                        </div>
+                      )}
+                      <ul className="ml-3 mt-1 space-y-1">
+                        {subcatItems.map((item, i) => (
+                          <li
+                            key={i}
+                            className="cursor-pointer text-gray-600 dark:text-gray-300 hover:text-cyan-500 transition-colors"
+                            onClick={() => {
+                              navigate(`/category/${item}`);
+                              setShowMobileMenu(false);
+                            }}
+                          >
+                            {item}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
                   ))}
-                </ul>
+                </div>
               )}
             </div>
           ))}
@@ -283,6 +337,37 @@ const Navbar = () => {
             )}
           </Link>
         </div>
+      </div>
+
+      {/* DESKTOP submenu desplegable */}
+      <div
+        onMouseLeave={handleMouseLeave}
+        className="hidden lg:flex justify-center bg-black/90 text-white absolute top-full left-0 right-0 z-40"
+      >
+        {hovered &&
+          Object.entries(categories[hovered]).map(([subcatTitle, items]) => (
+            <div
+              key={subcatTitle}
+              className="px-6 py-4 border-r last:border-r-0 border-gray-700 min-w-[160px]"
+            >
+              {subcatTitle !== "" && (
+                <h3 className="text-cyan-400 font-semibold uppercase mb-2">
+                  {subcatTitle}
+                </h3>
+              )}
+              <ul className="space-y-1 text-sm">
+                {items.map((item, i) => (
+                  <li
+                    key={i}
+                    className="cursor-pointer hover:text-cyan-400 transition"
+                    onClick={() => navigate(`/category/${item}`)}
+                  >
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
       </div>
     </nav>
   );
