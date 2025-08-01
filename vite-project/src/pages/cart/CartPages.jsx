@@ -88,13 +88,16 @@ const CartPage = () => {
 
   const user = JSON.parse(localStorage.getItem("users"));
 
+  // addressInfo inicial con localidad y provincia
   const [addressInfo, setAddressInfo] = useState({
     name: "",
     address: "",
+    localidad: "",
+    provincia: "",
     pincode: "",
     mobileNumber: "",
     time: Timestamp.now().toMillis(),
-    date: new Date().toLocaleString("en-US", {
+    date: new Date().toLocaleString("es-AR", {
       month: "short",
       day: "2-digit",
       year: "numeric",
@@ -110,6 +113,8 @@ const CartPage = () => {
     const newErrors = {
       name: !nameRegex.test(addressInfo.name),
       address: !addressRegex.test(addressInfo.address),
+      localidad: !nameRegex.test(addressInfo.localidad),
+      provincia: !nameRegex.test(addressInfo.provincia),
       pincode: !pincodeRegex.test(addressInfo.pincode),
       mobileNumber: !mobileRegex.test(addressInfo.mobileNumber),
     };
@@ -129,7 +134,7 @@ const CartPage = () => {
       shippingCost,
       total: cartTotal + shippingCost,
       time: Timestamp.now().toMillis(),
-      date: new Date().toLocaleString("en-US", {
+      date: new Date().toLocaleString("es-AR", {
         month: "short",
         day: "2-digit",
         year: "numeric",

@@ -70,6 +70,7 @@ const BuyNowModal = ({
           </h2>
 
           <div className="space-y-4">
+            {/* Nombre */}
             <input
               type="text"
               name="name"
@@ -86,6 +87,7 @@ const BuyNowModal = ({
               }`}
             />
 
+            {/* Dirección */}
             <input
               type="text"
               name="address"
@@ -102,6 +104,41 @@ const BuyNowModal = ({
               }`}
             />
 
+            {/* Localidad */}
+            <input
+              type="text"
+              name="localidad"
+              value={addressInfo.localidad}
+              onChange={(e) => {
+                setAddressInfo({ ...addressInfo, localidad: e.target.value });
+                setErrors({ ...errors, localidad: false });
+              }}
+              placeholder="Localidad"
+              className={`w-full rounded-md px-3 py-2 outline-none placeholder-gray-400 ${
+                errors.localidad
+                  ? "border border-red-500"
+                  : "border border-gray-300 focus:border-cyan-500"
+              }`}
+            />
+
+            {/* Provincia */}
+            <input
+              type="text"
+              name="provincia"
+              value={addressInfo.provincia}
+              onChange={(e) => {
+                setAddressInfo({ ...addressInfo, provincia: e.target.value });
+                setErrors({ ...errors, provincia: false });
+              }}
+              placeholder="Provincia"
+              className={`w-full rounded-md px-3 py-2 outline-none placeholder-gray-400 ${
+                errors.provincia
+                  ? "border border-red-500"
+                  : "border border-gray-300 focus:border-cyan-500"
+              }`}
+            />
+
+            {/* Código Postal */}
             <input
               type="number"
               name="pincode"
@@ -118,6 +155,7 @@ const BuyNowModal = ({
               }`}
             />
 
+            {/* Teléfono */}
             <input
               type="text"
               name="mobileNumber"

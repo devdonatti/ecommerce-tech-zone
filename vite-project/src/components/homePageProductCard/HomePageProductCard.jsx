@@ -58,18 +58,9 @@ const HomePageProductCard = () => {
     prevArrow: <PrevArrow />,
     nextArrow: <NextArrow />,
     responsive: [
-      {
-        breakpoint: 1024,
-        settings: { slidesToShow: 3 },
-      },
-      {
-        breakpoint: 768,
-        settings: { slidesToShow: 2 },
-      },
-      {
-        breakpoint: 480,
-        settings: { slidesToShow: 1 },
-      },
+      { breakpoint: 1024, settings: { slidesToShow: 3 } },
+      { breakpoint: 768, settings: { slidesToShow: 2 } },
+      { breakpoint: 480, settings: { slidesToShow: 1 } },
     ],
   };
 
@@ -83,6 +74,11 @@ const HomePageProductCard = () => {
           {Array.isArray(getAllProduct) &&
             getAllProduct.slice(0, 10).map((item) => {
               const { id, title, price, productImageUrl } = item;
+
+              const priceOriginal = price; // precio base
+              const priceDiscount = Math.round(priceOriginal * 1.25); // tachado
+              const priceInstallments = Math.round(priceOriginal * 1.1); // cuotas
+
               return (
                 <div key={id} className="px-2 m-4">
                   <div className="bg-white dark:bg-gray-900 border p-2 border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden shadow-sm hover:shadow-[0_0_15px_#06b6d4] hover:border-cyan-500 transition-all duration-300">
@@ -99,25 +95,21 @@ const HomePageProductCard = () => {
                       <h2 className="text-sm font-medium text-gray-800 dark:text-gray-100 truncate">
                         {title}
                       </h2>
-                      <p className="text-xs text-green-400 dark:text-gray-500 line-through">
-                        ${Math.round(price * 1.25).toLocaleString("es-AR")}{" "}
+
+                      {/* Precio tachado */}
+                      <p className="text-xs text-gray-400 line-through">
+                        ${priceDiscount.toLocaleString("es-AR")}
                       </p>
 
-                      {/* Precio con transferencia o débito - Principal */}
-                      <p className="text-xl font-bold text-green-400 dark:text-green-400">
-                        ${Math.round(price * 0.85).toLocaleString("es-AR")}
-                        <span className="text-sm font-normal text-green-400 ml-1">
-                          débito o transferencia
-                        </span>
+                      {/* Precio principal */}
+                      <p className="text-xl font-bold text-green-600 dark:text-green-400">
+                        ${priceOriginal.toLocaleString("es-AR")}
                       </p>
 
                       {/* Precio en cuotas */}
                       <p className="text-sm text-gray-500 dark:text-gray-400">
-                        ${Math.round(price * 1.1).toLocaleString("es-AR")}{" "}
-                        crédito
+                        ${priceInstallments.toLocaleString("es-AR")} en cuotas
                       </p>
-
-                      {/* Precio de lista tachado */}
 
                       {/* Botones */}
                       <div className="flex flex-col gap-2 mt-3">

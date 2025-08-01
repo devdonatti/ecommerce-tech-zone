@@ -158,13 +158,13 @@ const AddProductPage = () => {
             }
           />
           <Textarea
-            placeholder="Galería de imágenes (URLs una pegada a la otra)"
+            placeholder="Galería de imágenes (separar URLs con coma)"
             value={product.images?.join(", ") || ""}
             onChange={(e) =>
               setProduct({
                 ...product,
                 images: e.target.value
-                  .split(",")
+                  .split(/,|\n/)
                   .map((url) => url.trim())
                   .filter((url) => url !== ""),
               })

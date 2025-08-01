@@ -13,16 +13,23 @@ const ProductDetails = ({
       <h1 className="text-2xl font-semibold">{product?.title}</h1>
 
       {/* Precios */}
+      {/* Precios */}
+      {/* Precios */}
       <div className="space-y-1">
+        {/* Precio tachado con recargo (simula descuento) */}
         <p className="text-base text-gray-400 dark:text-gray-500 line-through">
           ${Math.round(product?.price * 1.25).toLocaleString("es-AR")}
         </p>
+
+        {/* Precio principal en verde (original) */}
         <p className="text-3xl font-bold text-green-400 dark:text-green-400">
-          ${Math.round(product?.price * 0.85).toLocaleString("es-AR")}
+          ${product?.price.toLocaleString("es-AR")}
           <span className="text-sm text-green-400 font-medium ml-2">
             con débito o transferencia
           </span>
         </p>
+
+        {/* Precio en cuotas (+10%) */}
         <p className="text-base text-gray-500 dark:text-gray-400">
           ${Math.round(product?.price * 1.1).toLocaleString("es-AR")} hasta en
           12 cuotas

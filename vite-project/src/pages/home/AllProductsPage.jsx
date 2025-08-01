@@ -27,6 +27,11 @@ const AllProductsPage = () => {
           {Array.isArray(getAllProduct) &&
             getAllProduct.map((item) => {
               const { id, title, price, productImageUrl } = item;
+
+              const priceOriginal = price; // precio base
+              const priceDiscount = Math.round(priceOriginal * 1.25); // tachado
+              const priceInstallments = Math.round(priceOriginal * 1.1); // cuotas
+
               return (
                 <div
                   key={id}
@@ -42,16 +47,22 @@ const AllProductsPage = () => {
                     <h2 className="text-sm font-medium text-gray-800 dark:text-gray-100 truncate">
                       {title}
                     </h2>
+
+                    {/* Precio tachado */}
                     <p className="text-xs text-gray-400 line-through">
-                      ${Math.round(price * 1.1).toLocaleString("es-AR")}
+                      ${priceDiscount.toLocaleString("es-AR")}
                     </p>
-                    <p className="text-lg font-bold text-gray-900 dark:text-white">
-                      ${price.toLocaleString("es-AR")}
+
+                    {/* Precio principal */}
+                    <p className="text-lg font-bold text-green-600 dark:text-green-400">
+                      ${priceOriginal.toLocaleString("es-AR")}
                     </p>
-                    <p className="text-xs text-green-600 dark:text-green-400 font-medium">
-                      ${Math.round(price * 0.85).toLocaleString("es-AR")} con
-                      transferencia
+
+                    {/* Precio en cuotas */}
+                    <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">
+                      ${priceInstallments.toLocaleString("es-AR")} en cuotas
                     </p>
+
                     <div className="flex gap-2 mt-2">
                       <button
                         onClick={() => navigate(`/productinfo/${id}`)}

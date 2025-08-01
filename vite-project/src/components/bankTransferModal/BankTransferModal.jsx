@@ -41,6 +41,8 @@ const BankTransferModal = ({ addressInfo, setAddressInfo, shippingCost }) => {
     const newErrors = {
       name: !nameRegex.test(addressInfo.name),
       address: !addressRegex.test(addressInfo.address),
+      localidad: !nameRegex.test(addressInfo.localidad),
+      provincia: !nameRegex.test(addressInfo.provincia),
       pincode: !pincodeRegex.test(addressInfo.pincode),
       mobileNumber: !mobileRegex.test(addressInfo.mobileNumber),
     };
@@ -97,7 +99,7 @@ const BankTransferModal = ({ addressInfo, setAddressInfo, shippingCost }) => {
           {showCBU ? (
             <div className="space-y-4 text-sm">
               <p>
-                <strong>CBU:00000</strong>{" "}
+                <strong>CBU: 0000003100029621780498</strong>{" "}
                 <button
                   onClick={copyToClipboard}
                   className="ml-2 text-blue-500 underline text-xs"
@@ -106,14 +108,14 @@ const BankTransferModal = ({ addressInfo, setAddressInfo, shippingCost }) => {
                 </button>
               </p>
               <p>
-                <strong>Alias:</strong> viking10
+                <strong>Alias:</strong> olivosmp
               </p>
 
               <p className="text-green-700 mt-4">
                 Luego de transferir, enviá el comprobante a nuestro WhatsApp.
               </p>
               <a
-                href={`https://wa.me/5491170618004?text=${encodeURIComponent(
+                href={`https://wa.me/5491154105141?text=${encodeURIComponent(
                   `Hola! Te envío el comprobante de la transferencia.\n\nNombre: ${
                     addressInfo.name
                   }\nTotal: $${
@@ -149,6 +151,26 @@ const BankTransferModal = ({ addressInfo, setAddressInfo, shippingCost }) => {
                 }}
                 className={errors.address ? "border-red-500" : ""}
                 error={errors.address}
+              />
+              <Input
+                label="Localidad"
+                value={addressInfo.localidad}
+                onChange={(e) => {
+                  setAddressInfo({ ...addressInfo, localidad: e.target.value });
+                  setErrors({ ...errors, localidad: false });
+                }}
+                className={errors.localidad ? "border-red-500" : ""}
+                error={errors.localidad}
+              />
+              <Input
+                label="Provincia"
+                value={addressInfo.provincia}
+                onChange={(e) => {
+                  setAddressInfo({ ...addressInfo, provincia: e.target.value });
+                  setErrors({ ...errors, provincia: false });
+                }}
+                className={errors.provincia ? "border-red-500" : ""}
+                error={errors.provincia}
               />
               <Input
                 label="Código Postal"

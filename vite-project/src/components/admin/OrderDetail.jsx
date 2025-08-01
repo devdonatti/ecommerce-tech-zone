@@ -152,6 +152,7 @@ const OrderDetail = () => {
                     <tr className="bg-[#111] border-b border-fuchsia-700">
                       <td colSpan={7} className="px-6 py-4 space-y-6">
                         {/* Datos del cliente */}
+                        {/* Datos del cliente */}
                         <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4 text-sm text-white">
                           <div>
                             <span className="font-bold text-cyan-400">
@@ -164,6 +165,18 @@ const OrderDetail = () => {
                               Dirección:
                             </span>{" "}
                             {order.addressInfo.address}
+                          </div>
+                          <div>
+                            <span className="font-bold text-cyan-400">
+                              Localidad:
+                            </span>{" "}
+                            {order.addressInfo.localidad || "—"}
+                          </div>
+                          <div>
+                            <span className="font-bold text-cyan-400">
+                              Provincia:
+                            </span>{" "}
+                            {order.addressInfo.provincia || "—"}
                           </div>
                           <div>
                             <span className="font-bold text-cyan-400">
