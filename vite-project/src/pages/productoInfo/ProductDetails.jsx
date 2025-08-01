@@ -14,7 +14,7 @@ const ProductDetails = ({
 
       {/* Precios */}
       <div className="space-y-1">
-        <p className="text-xl text-gray-400 dark:text-gray-500 line-through">
+        <p className="text-base text-gray-400 dark:text-gray-500 line-through">
           ${Math.round(product?.price * 1.25).toLocaleString("es-AR")}
         </p>
         <p className="text-3xl font-bold text-green-400 dark:text-green-400">
@@ -49,10 +49,11 @@ const ProductDetails = ({
           <CheckCircle size={32} className="text-green-500" /> Stock disponible
         </li>
         <li className="flex items-center gap-2">
-          <Truck size={32} className="text-green-500" /> Envíos a todo el país
+          <Truck size={32} className="text-green-500" />{" "}
+          <span className="text-green-500">Envíos gratis</span> a todo el país
         </li>
         <li className="flex items-center gap-2">
-          <PackageCheck size={32} className="text-green-500" /> Retiro gratis
+          <PackageCheck size={32} className="text-green-500" /> Retiro sin cargo
         </li>
       </ul>
 
