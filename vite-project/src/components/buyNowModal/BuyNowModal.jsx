@@ -5,7 +5,7 @@ import toast from "react-hot-toast";
 import axios from "axios";
 import { initMercadoPago } from "@mercadopago/sdk-react";
 
-initMercadoPago("APP_USR-84634554-b65e-4d73-8dee-c07d4962e39b"); // PUBLIC KEY
+initMercadoPago("APP_USR-2f91392c-9b40-4828-ab5e-83480e3eb9c2"); // PUBLIC KEY
 
 const BuyNowModal = ({
   addressInfo,
