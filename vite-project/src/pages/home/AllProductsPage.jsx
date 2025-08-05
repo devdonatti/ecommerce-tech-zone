@@ -1,90 +1,282 @@
-import { useContext } from "react";
+import { Timestamp, addDoc, collection } from "firebase/firestore";
+import { useContext, useState } from "react";
 import myContext from "../../context/myContext";
-import { useNavigate } from "react-router";
-import { Eye, ShoppingCart } from "lucide-react";
-import { useDispatch } from "react-redux";
-import { addToCart } from "../../redux/cartSlice";
 import toast from "react-hot-toast";
-import Layout from "../../components/layout/Layout";
+import { fireDB } from "../../firebase/FirebaseConfig";
+import { useNavigate } from "react-router";
+import Loader from "../../components/loader/Loader";
 
-const AllProductsPage = () => {
-  const { getAllProduct } = useContext(myContext);
+const categoryData = {
+  "Componentes de PC": {
+    "": [
+      "Placas de Video",
+      "Motherboards",
+      "Microprocesadores",
+      "Discos SSD",
+      "Memorias RAM",
+      "Gabinetes",
+      "Fuentes",
+      "CPU Coolers - Coolers",
+      "Conectividad",
+    ],
+    Accesorios: ["Pasta térmica"],
+  },
+  Notebooks: {
+    Notebooks: ["Notebooks AMD", "Notebooks Intel"],
+    Almacenamiento: [
+      "Discos SSD",
+      "Discos Externos USB",
+      "Memorias SD - Pendrives",
+    ],
+    Accesorios: ["Mouse Inalámbricos", "Mochilas", "Pads"],
+    "Memorias RAM": ["Memorias RAM Sodimm"],
+  },
+  Periféricos: {
+    Auriculares: [
+      "Gamer",
+      "Estéreo",
+      "Surround",
+      "Para celular",
+      "Soporte de auriculares",
+    ],
+    Mouse: ["Gamer", "Inalámbrico"],
+    Teclados: ["Mecánicos", "Membrana", "RGB", "Combo"],
+    Pads: ["Small", "Medium", "Large"],
+    Parlantes: ["Parlantes"],
+    Joysticks: ["Joystick"],
+    "Volantes y Accesorios": ["Volantes"],
+    Webcams: ["WebCams"],
+    Impresoras: ["Tinta y tóner"],
+  },
+  Monitores: {
+    "": [
+      "Monitores LED",
+      'Monitores 21"',
+      'Monitores 24"',
+      'Monitores 27"',
+      'Monitores 32"',
+      "Monitores Curvos",
+    ],
+  },
+};
+
+const AddProductPage = () => {
+  const context = useContext(myContext);
+  const { loading, setLoading } = context;
   const navigate = useNavigate();
-  const dispatch = useDispatch();
 
-  const addCart = (item) => {
-    dispatch(addToCart({ ...item, quantity: 1 }));
-    toast.success("Agregado al carrito");
+  const [product, setProduct] = useState({
+    title: "",
+    price: 0, // ahora número
+    productImageUrl: "",
+    images: [],
+    category: "",
+    description: "",
+    brand: "",
+    connectivity: "",
+    compatibility: "",
+    quantity: 1, // número
+    time: Timestamp.now().toDate().toISOString(),
+    date: new Date().toLocaleString("en-US", {
+      month: "short",
+      day: "2-digit",
+      year: "numeric",
+    }),
+  });
+
+  const addProductFunction = async () => {
+    if (
+      !product.title ||
+      !product.price ||
+      !product.productImageUrl ||
+      !product.category ||
+      !product.description
+    ) {
+      return toast.error("Todos los campos obligatorios deben completarse");
+    }
+
+    setLoading(true);
+    try {
+      const productRef = collection(fireDB, "products");
+
+      // Guardamos con price y quantity como números
+      await addDoc(productRef, {
+        ...product,
+        price: Number(product.price),
+        quantity: Number(product.quantity),
+      });
+
+      toast.success("Producto agregado correctamente");
+      navigate("/admin-dashboard");
+    } catch (error) {
+      console.log(error);
+      toast.error("Error al agregar producto");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <Layout>
-      <div className="px-4 mt-8">
-        <h1 className="text-2xl font-semibold text-center dark:text-white mb-6">
-          Todos los Productos
-        </h1>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
-          {Array.isArray(getAllProduct) &&
-            getAllProduct.map((item) => {
-              const { id, title, price, productImageUrl } = item;
+    <div className="flex justify-center items-center h-screen bg-[#0a0a0a] px-4">
+      {loading && <Loader />}
 
-              const priceOriginal = price; // precio base
-              const priceDiscount = Math.round(priceOriginal * 1.25); // tachado
-              const priceInstallments = Math.round(priceOriginal * 1.1); // cuotas
+      <div className="w-full max-w-xl bg-black border border-fuchsia-700 rounded-2xl shadow-xl flex flex-col overflow-hidden h-[90vh]">
+        <div className="px-6 pt-6">
+          <h2 className="text-center text-2xl font-extrabold text-white tracking-wide mb-4">
+            Agregar producto
+          </h2>
+        </div>
 
-              return (
-                <div
-                  key={id}
-                  className="bg-white dark:bg-gray-900 border p-3 rounded-xl shadow hover:shadow-[0_0_15px_#06b6d4] hover:border-cyan-500 transition-all duration-300"
+        <div className="px-6 pb-4 overflow-y-auto flex-grow">
+          <Input
+            placeholder="Título del producto"
+            value={product.title}
+            onChange={(e) => setProduct({ ...product, title: e.target.value })}
+          />
+          <Input
+            type="number"
+            placeholder="Precio del producto"
+            value={product.price}
+            onChange={(e) =>
+              setProduct({ ...product, price: Number(e.target.value) })
+            }
+          />
+          <Input
+            placeholder="Imagen principal (URL)"
+            value={product.productImageUrl}
+            onChange={(e) =>
+              setProduct({ ...product, productImageUrl: e.target.value })
+            }
+          />
+          <Textarea
+            placeholder="Galería de imágenes (URLs separadas por coma)"
+            value={product.images?.join(", ") || ""}
+            onChange={(e) =>
+              setProduct({
+                ...product,
+                images: e.target.value
+                  .split(",")
+                  .map((url) => url.trim())
+                  .filter((url) => url !== ""),
+              })
+            }
+          />
+
+          {/* Selector de categoría */}
+          <div className="mb-3">
+            <label className="text-white text-sm font-medium mb-1 block">
+              Categoría
+            </label>
+            <div className="relative">
+              <select
+                value={product.category}
+                onChange={(e) =>
+                  setProduct({ ...product, category: e.target.value })
+                }
+                className="w-full appearance-none bg-black border border-cyan-400 text-white px-3 py-2 pr-10 rounded-md outline-none focus:ring-2 focus:ring-fuchsia-600 transition duration-200"
+              >
+                <option disabled value="">
+                  Seleccionar categoría
+                </option>
+
+                {Object.entries(categoryData).map(([group, subgroups]) => (
+                  <optgroup key={group} label={group}>
+                    {Object.entries(subgroups).flatMap(
+                      ([subgroupName, items]) =>
+                        items.map((item) => {
+                          const optionLabel = subgroupName
+                            ? `${subgroupName} - ${item}`
+                            : item;
+                          return (
+                            <option
+                              key={`${subgroupName}-${item}`}
+                              value={optionLabel}
+                            >
+                              {optionLabel}
+                            </option>
+                          );
+                        })
+                    )}
+                  </optgroup>
+                ))}
+              </select>
+              <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-white">
+                <svg
+                  className="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  viewBox="0 0 24 24"
                 >
-                  <img
-                    src={productImageUrl}
-                    alt={title}
-                    className="h-52 w-full object-cover rounded-md cursor-pointer"
-                    onClick={() => navigate(`/productinfo/${id}`)}
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M19 9l-7 7-7-7"
                   />
-                  <div className="mt-3 space-y-1">
-                    <h2 className="text-sm font-medium text-gray-800 dark:text-gray-100 truncate">
-                      {title}
-                    </h2>
+                </svg>
+              </div>
+            </div>
+          </div>
 
-                    {/* Precio tachado */}
-                    <p className="text-xs text-gray-400 line-through">
-                      ${priceDiscount.toLocaleString("es-AR")}
-                    </p>
+          <Textarea
+            placeholder="Descripción del producto"
+            value={product.description}
+            onChange={(e) =>
+              setProduct({ ...product, description: e.target.value })
+            }
+          />
+          <Input
+            placeholder="Marca"
+            value={product.brand}
+            onChange={(e) => setProduct({ ...product, brand: e.target.value })}
+          />
+          <Input
+            placeholder="Conectividad"
+            value={product.connectivity}
+            onChange={(e) =>
+              setProduct({ ...product, connectivity: e.target.value })
+            }
+          />
+          <Input
+            placeholder="Compatibilidad"
+            value={product.compatibility}
+            onChange={(e) =>
+              setProduct({ ...product, compatibility: e.target.value })
+            }
+          />
+        </div>
 
-                    {/* Precio principal */}
-                    <p className="text-lg font-bold text-green-600 dark:text-green-400">
-                      ${priceOriginal.toLocaleString("es-AR")}
-                    </p>
-
-                    {/* Precio en cuotas */}
-                    <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">
-                      ${priceInstallments.toLocaleString("es-AR")} en cuotas
-                    </p>
-
-                    <div className="flex gap-2 mt-2">
-                      <button
-                        onClick={() => navigate(`/productinfo/${id}`)}
-                        className="flex-1 flex items-center justify-center gap-1 bg-green-600 hover:bg-green-700 text-white py-1 rounded-full text-xs"
-                      >
-                        <Eye size={14} /> Ver
-                      </button>
-                      <button
-                        onClick={() => addCart(item)}
-                        className="flex-1 flex items-center justify-center gap-1 bg-cyan-600 hover:bg-cyan-800 text-white py-1 rounded-full text-xs"
-                      >
-                        <ShoppingCart size={14} /> Agregar
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
+        <div className="px-6 py-4 border-t border-fuchsia-800">
+          <button
+            onClick={addProductFunction}
+            className="w-full bg-gradient-to-r from-cyan-400 to-fuchsia-500 hover:from-fuchsia-500 hover:to-cyan-400 text-black py-2 font-bold rounded-md transition duration-300"
+          >
+            Agregar producto
+          </button>
         </div>
       </div>
-    </Layout>
+    </div>
   );
 };
 
-export default AllProductsPage;
+const Input = ({ type = "text", ...props }) => (
+  <div className="mb-3">
+    <input
+      type={type}
+      {...props}
+      className="w-full px-3 py-2 rounded-md border border-cyan-400 bg-black text-white placeholder-gray-400 outline-none focus:ring-2 focus:ring-fuchsia-600 transition duration-200"
+    />
+  </div>
+);
+
+const Textarea = ({ ...props }) => (
+  <div className="mb-3">
+    <textarea
+      rows="3"
+      {...props}
+      className="w-full px-3 py-2 rounded-md border border-cyan-400 bg-black text-white placeholder-gray-400 outline-none focus:ring-2 focus:ring-fuchsia-600 transition duration-200"
+    />
+  </div>
+);
+
+export default AddProductPage;

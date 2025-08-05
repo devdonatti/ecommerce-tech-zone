@@ -22,9 +22,9 @@ const ProductDetails = ({
         </p>
 
         {/* Precio principal en verde (original) */}
-        <p className="text-3xl font-bold text-green-400 dark:text-green-400">
+        <p className="text-3xl font-bold text-[#08BC08] dark:text-[#08BC08]">
           ${product?.price.toLocaleString("es-AR")}
-          <span className="text-sm text-green-400 font-medium ml-2">
+          <span className="text-sm text-[#08BC08] font-medium ml-2">
             con débito o transferencia
           </span>
         </p>

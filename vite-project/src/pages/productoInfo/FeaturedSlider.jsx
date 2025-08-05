@@ -41,7 +41,7 @@ const FeaturedSlider = ({ products, addCart, navigate }) => {
 
   return (
     <div className="mt-12 px-4" id="destacados">
-      <h1 className="text-center mb-6 text-2xl font-semibold dark:text-cyan-600">
+      <h1 className="text-center mb-6 text-2xl font-semibold dark:text-black">
         Destacados
       </h1>
       <div className="relative">
@@ -67,13 +67,13 @@ const FeaturedSlider = ({ products, addCart, navigate }) => {
                     <h2 className="text-sm font-medium text-gray-800 dark:text-gray-100 truncate">
                       {title}
                     </h2>
-                    <p className="text-xs text-green-400 dark:text-gray-500 line-through">
+                    <p className="text-xs text-[#08BC08] dark:text-gray-500 line-through">
                       ${Math.round(price * 1.25).toLocaleString("es-AR")}
                     </p>
 
-                    <p className="text-xl font-bold text-green-400 dark:text-green-400">
+                    <p className="text-xl font-bold text-[#08BC08] dark:text-[#08BC08]">
                       ${Math.round(price * 0.85).toLocaleString("es-AR")}
-                      <span className="text-sm font-normal text-green-400 ml-1">
+                      <span className="text-sm font-normal text-[#08BC08] ml-1">
                         débito o transferencia
                       </span>
                     </p>
@@ -88,7 +88,7 @@ const FeaturedSlider = ({ products, addCart, navigate }) => {
                           navigate(`/productinfo/${id}`);
                           window.scrollTo(0, 0);
                         }}
-                        className="w-full flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-full text-sm transition-colors"
+                        className="w-full flex items-center justify-center gap-2 bg-[#08BC08] hover:bg-cyan-500 text-white font-medium py-2 px-4 rounded-full text-sm transition-colors"
                       >
                         <Eye size={16} /> VER MÁS
                       </button>

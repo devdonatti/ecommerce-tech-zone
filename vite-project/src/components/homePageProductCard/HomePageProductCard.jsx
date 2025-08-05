@@ -102,7 +102,7 @@ const HomePageProductCard = () => {
                       </p>
 
                       {/* Precio principal */}
-                      <p className="text-xl font-bold text-green-600 dark:text-green-400">
+                      <p className="text-xl font-bold text-[#08BC08] dark:text-[#08BC08]">
                         ${priceOriginal.toLocaleString("es-AR")}
                       </p>
 
@@ -115,7 +115,7 @@ const HomePageProductCard = () => {
                       <div className="flex flex-col gap-2 mt-3">
                         <button
                           onClick={() => navigate(`/productinfo/${id}`)}
-                          className="w-full flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-full text-sm transition-colors"
+                          className="w-full flex items-center justify-center gap-2 bg-[#08BC08] hover:bg-cyan-500 text-white font-medium py-2 px-4 rounded-full text-sm transition-colors"
                         >
                           <Eye size={16} /> VER MÁS
                         </button>
