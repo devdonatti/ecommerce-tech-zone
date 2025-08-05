@@ -5,6 +5,7 @@ import UserDetail from "../../components/admin/UserDetail";
 import { useContext } from "react";
 import myContext from "../../context/myContext";
 import { Link } from "react-router-dom";
+import DiscountCodesAdmin from "./DiscountCodesAdmin";
 
 const AdminDashboard = () => {
   const user = JSON.parse(localStorage.getItem("users"));
@@ -151,6 +152,9 @@ const AdminDashboard = () => {
             <UserDetail />
           </TabPanel>
         </Tabs>
+      </div>
+      <div className="m-4">
+        <DiscountCodesAdmin />
       </div>
     </div>
   );

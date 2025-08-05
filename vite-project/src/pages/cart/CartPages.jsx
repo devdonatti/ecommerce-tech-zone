@@ -9,7 +9,14 @@ import {
 } from "../../redux/cartSlice";
 import toast from "react-hot-toast";
 import { useEffect, useState } from "react";
-import { Timestamp, addDoc, collection } from "firebase/firestore";
+import {
+  Timestamp,
+  addDoc,
+  collection,
+  getDocs,
+  query,
+  where,
+} from "firebase/firestore";
 import { fireDB } from "../../firebase/FirebaseConfig";
 import BuyNowModal from "../../components/buyNowModal/BuyNowModal";
 import BankTransferModal from "../../components/bankTransferModal/BankTransferModal";
@@ -20,6 +27,9 @@ const CartPage = () => {
   const [shippingCost, setShippingCost] = useState(0); // Envío gratis por defecto
   const cartItems = useSelector((state) => state.cart);
   const dispatch = useDispatch();
+
+  const [discountCode, setDiscountCode] = useState("");
+  const [discountPercent, setDiscountPercent] = useState(0);
 
   useEffect(() => {
     localStorage.setItem("cart", JSON.stringify(cartItems));
@@ -86,9 +96,13 @@ const CartPage = () => {
     return sum + (isNaN(quantity) || isNaN(price) ? 0 : quantity * price);
   }, 0);
 
+  const discountedTotal = discountPercent
+    ? Math.round(cartTotal - cartTotal * (discountPercent / 100))
+    : cartTotal;
+
   const user = JSON.parse(localStorage.getItem("users"));
 
-  // addressInfo inicial con localidad y provincia
+  // addressInfo inicial
   const [addressInfo, setAddressInfo] = useState({
     name: "",
     address: "",
@@ -103,6 +117,33 @@ const CartPage = () => {
       year: "numeric",
     }),
   });
+
+  // Aplicar código de descuento
+  const applyDiscountCode = async () => {
+    if (!discountCode) return toast.error("Ingresá un código");
+
+    const q = query(
+      collection(fireDB, "discountCodes"),
+      where("code", "==", discountCode.toUpperCase())
+    );
+    const snapshot = await getDocs(q);
+
+    if (snapshot.empty) {
+      return toast.error("Código inválido");
+    }
+
+    const discountData = snapshot.docs[0].data();
+
+    // Validaciones
+    const today = new Date();
+    const expiration = new Date(discountData.expiresAt);
+
+    if (!discountData.active) return toast.error("Código inactivo");
+    if (expiration < today) return toast.error("El código ha expirado");
+
+    setDiscountPercent(discountData.discount);
+    toast.success(`Código aplicado: ${discountData.discount}%`);
+  };
 
   const buyNowFunction = async () => {
     const nameRegex = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/;
@@ -132,7 +173,9 @@ const CartPage = () => {
       userid: user?.uid || "invitado",
       status: "confirmed",
       shippingCost,
-      total: cartTotal + shippingCost,
+      subtotal: cartTotal,
+      discountPercent,
+      finalTotal: discountedTotal,
       time: Timestamp.now().toMillis(),
       date: new Date().toLocaleString("es-AR", {
         month: "short",
@@ -159,6 +202,7 @@ const CartPage = () => {
             Carrito
           </h1>
           <form className="mt-12 lg:grid lg:grid-cols-12 lg:items-start lg:gap-x-12 xl:gap-x-16">
+            {/* Lista de productos */}
             <section
               aria-labelledby="cart-heading"
               className="rounded-lg bg-white lg:col-span-8"
@@ -187,7 +231,7 @@ const CartPage = () => {
                                 {item.category}
                               </p>
                               <p className="text-sm font-medium text-gray-900 mt-1">
-                                ${item.price}
+                                ${Number(item.price).toLocaleString("es-AR")}
                               </p>
                             </div>
                           </div>
@@ -237,6 +281,7 @@ const CartPage = () => {
               </ul>
             </section>
 
+            {/* Resumen */}
             <section
               aria-labelledby="summary-heading"
               className="mt-16 rounded-md bg-white lg:col-span-4 lg:mt-0 lg:p-0"
@@ -254,16 +299,42 @@ const CartPage = () => {
                       Precio ({cartItemTotal} items)
                     </dt>
                     <dd className="text-sm font-medium text-gray-900">
-                      $ {cartTotal}
+                      ${cartTotal.toLocaleString("es-AR")}
                     </dd>
                   </div>
 
+                  {/* Input código de descuento */}
+                  <div className="px-2 py-2">
+                    <div className="flex gap-2">
+                      <input
+                        type="text"
+                        placeholder="Código de descuento"
+                        value={discountCode}
+                        onChange={(e) => setDiscountCode(e.target.value)}
+                        className="flex-1 px-3 py-2 border rounded-md text-sm"
+                      />
+                      <button
+                        type="button"
+                        onClick={applyDiscountCode}
+                        className="bg-cyan-500 hover:bg-cyan-600 text-white px-4 py-2 rounded-md text-sm"
+                      >
+                        Aplicar
+                      </button>
+                    </div>
+                    {discountPercent > 0 && (
+                      <p className="text-green-500 text-sm mt-2">
+                        ✅ Se aplicó un {discountPercent}% de descuento
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Total */}
                   <div className="flex items-center justify-between border-y border-dashed py-4 mt-2">
                     <dt className="text-base font-medium text-gray-900">
                       Total
                     </dt>
                     <dd className="text-base font-medium text-gray-900">
-                      $ {cartTotal}
+                      ${discountedTotal.toLocaleString("es-AR")}
                     </dd>
                   </div>
 
