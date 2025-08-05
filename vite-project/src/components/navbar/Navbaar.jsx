@@ -146,7 +146,7 @@ const Navbar = () => {
         <div className="lg:hidden bg-white dark:bg-black px-4 pb-4 text-black dark:text-white">
           {/* Botón Productos */}
           <div
-            className="mb-3 font-semibold cursor-pointer hover:text-cyan-600 dark:hover:text-cyan-400"
+            className="border-b border-gray-300 dark:border-gray-700 py-2 font-semibold cursor-pointer hover:text-cyan-600 dark:hover:text-cyan-400"
             onClick={() => {
               navigate("/productos");
               setShowMobileMenu(false);

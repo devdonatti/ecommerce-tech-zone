@@ -24,7 +24,7 @@ const Features = () => {
         <div className="flex flex-col items-center space-y-2">
           <a
             target="_blank"
-            href="https://wa.me/541154105141"
+            href="https://wa.me/5491154105141"
             className="flex flex-col items-center space-y-2"
           >
             <MessageCircle className="w-10 h-10 text-black" />

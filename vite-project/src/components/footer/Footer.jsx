@@ -68,7 +68,7 @@ const Footer = () => {
               <Facebook size={20} />
             </a>
             <a
-              href="https://wa.me/541154105141"
+              href="https://wa.me/5491154105141"
               target="_blank"
               rel="noopener noreferrer"
               className="bg-black text-white p-2 rounded-full hover:bg-green-600 transition"
