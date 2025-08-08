@@ -18,8 +18,6 @@ import {
   where,
 } from "firebase/firestore";
 import { fireDB } from "../../firebase/FirebaseConfig";
-import BuyNowModal from "../../components/buyNowModal/BuyNowModal";
-import BankTransferModal from "../../components/bankTransferModal/BankTransferModal";
 import axios from "axios";
 
 const CartPage = () => {
@@ -35,13 +33,26 @@ const CartPage = () => {
     localStorage.setItem("cart", JSON.stringify(cartItems));
   }, [cartItems]);
 
-  const createPreference = async () => {
+  const descuentoDebito = 0.9; // 10% de descuento para débito/transferencia
+
+  // Calcular precio total normal
+  const cartTotal = cartItems.reduce((sum, item) => {
+    const quantity = Number(item.quantity);
+    const price = Number(item.price);
+    return sum + (isNaN(quantity) || isNaN(price) ? 0 : quantity * price);
+  }, 0);
+
+  // Precio total con descuento para débito
+  const precioDebito = Math.round(cartTotal * descuentoDebito);
+
+  // Función para crear preferencia para crédito (precio normal)
+  const createPreferenceCredito = async () => {
     try {
       const items = cartItems.map((item) => ({
         title: item.title,
         quantity: Number(item.quantity),
         price: Number(item.price),
-        description: item.description,
+        description: "Pago con crédito",
         productImageUrl: item.productImageUrl,
       }));
 
@@ -55,18 +66,47 @@ const CartPage = () => {
       if (!init_point) throw new Error("No se recibió el link de pago");
       return init_point;
     } catch (error) {
-      console.error("Error al crear preferencia:", error);
-      toast.error(error.message);
+      toast.error(error.message || "Error al crear preferencia crédito");
     }
   };
 
-  const buyCart = async () => {
-    const initPoint = await createPreference();
-    if (initPoint) {
-      window.location.href = initPoint;
+  // Función para crear preferencia para débito/transferencia (precio rebajado)
+  const createPreferenceDebito = async () => {
+    try {
+      const items = cartItems.map((item) => ({
+        title: item.title,
+        quantity: Number(item.quantity),
+        price: Number(item.price) * descuentoDebito, // aplicar descuento a cada producto
+        description: "Pago con débito/transferencia",
+        productImageUrl: item.productImageUrl,
+      }));
+
+      const response = await axios.post(
+        "https://ecommerce-tech-zone-q2e8-git-main-devdonattis-projects.vercel.app/api/create_preference_cart",
+        { cartItems: items, shippingCost }
+      );
+
+      const { init_point } = response.data;
+
+      if (!init_point) throw new Error("No se recibió el link de pago");
+      return init_point;
+    } catch (error) {
+      toast.error(error.message || "Error al crear preferencia débito");
     }
   };
 
+  // Funciones para pagar
+  const pagarConCredito = async () => {
+    const url = await createPreferenceCredito();
+    if (url) window.location.href = url;
+  };
+
+  const pagarConDebito = async () => {
+    const url = await createPreferenceDebito();
+    if (url) window.location.href = url;
+  };
+
+  // Funciones para manejar carrito
   const deleteCart = (item) => {
     dispatch(deleteFromCart(item));
     toast.success("Producto eliminado del carrito");
@@ -85,24 +125,8 @@ const CartPage = () => {
     dispatch(updateQuantity({ id, quantity: newQuantity }));
   };
 
-  const cartItemTotal = cartItems.reduce((sum, item) => {
-    const quantity = Number(item.quantity);
-    return sum + (isNaN(quantity) ? 0 : quantity);
-  }, 0);
-
-  const cartTotal = cartItems.reduce((sum, item) => {
-    const quantity = Number(item.quantity);
-    const price = Number(item.price);
-    return sum + (isNaN(quantity) || isNaN(price) ? 0 : quantity * price);
-  }, 0);
-
-  const discountedTotal = discountPercent
-    ? Math.round(cartTotal - cartTotal * (discountPercent / 100))
-    : cartTotal;
-
+  // Validaciones para dirección, descuento y usuario (simplificado)
   const user = JSON.parse(localStorage.getItem("users"));
-
-  // addressInfo inicial
   const [addressInfo, setAddressInfo] = useState({
     name: "",
     address: "",
@@ -118,7 +142,7 @@ const CartPage = () => {
     }),
   });
 
-  // Aplicar código de descuento
+  // Aplicar código de descuento (igual que antes)
   const applyDiscountCode = async () => {
     if (!discountCode) return toast.error("Ingresá un código");
 
@@ -134,7 +158,6 @@ const CartPage = () => {
 
     const discountData = snapshot.docs[0].data();
 
-    // Validaciones
     const today = new Date();
     const expiration = new Date(discountData.expiresAt);
 
@@ -145,55 +168,7 @@ const CartPage = () => {
     toast.success(`Código aplicado: ${discountData.discount}%`);
   };
 
-  const buyNowFunction = async () => {
-    const nameRegex = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/;
-    const addressRegex = /^[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ\s,.-]+$/;
-    const pincodeRegex = /^[0-9]{4,10}$/;
-    const mobileRegex = /^[0-9]{6,15}$/;
-
-    const newErrors = {
-      name: !nameRegex.test(addressInfo.name),
-      address: !addressRegex.test(addressInfo.address),
-      localidad: !nameRegex.test(addressInfo.localidad),
-      provincia: !nameRegex.test(addressInfo.provincia),
-      pincode: !pincodeRegex.test(addressInfo.pincode),
-      mobileNumber: !mobileRegex.test(addressInfo.mobileNumber),
-    };
-
-    setErrors(newErrors);
-
-    if (Object.values(newErrors).some((error) => error)) {
-      return toast.error("Completá los campos correctamente");
-    }
-
-    const orderInfo = {
-      cartItems,
-      addressInfo,
-      email: user?.email || "invitado",
-      userid: user?.uid || "invitado",
-      status: "confirmed",
-      shippingCost,
-      subtotal: cartTotal,
-      discountPercent,
-      finalTotal: discountedTotal,
-      time: Timestamp.now().toMillis(),
-      date: new Date().toLocaleString("es-AR", {
-        month: "short",
-        day: "2-digit",
-        year: "numeric",
-      }),
-    };
-
-    try {
-      const orderRef = collection(fireDB, "order");
-      await addDoc(orderRef, orderInfo);
-      toast.success("Orden creada exitosamente");
-      await buyCart();
-    } catch (error) {
-      toast.error("Error al crear la orden");
-    }
-  };
-
+  // Render del componente
   return (
     <Layout>
       <div className="container mx-auto px-4 max-w-7xl lg:px-0">
@@ -281,7 +256,7 @@ const CartPage = () => {
               </ul>
             </section>
 
-            {/* Resumen */}
+            {/* Resumen y botones de pago */}
             <section
               aria-labelledby="summary-heading"
               className="mt-16 rounded-md bg-white lg:col-span-4 lg:mt-0 lg:p-0"
@@ -296,7 +271,9 @@ const CartPage = () => {
                 <dl className="space-y-1 px-2 py-4">
                   <div className="flex items-center justify-between">
                     <dt className="text-sm text-gray-800">
-                      Precio ({cartItemTotal} items)
+                      Precio (
+                      {cartItems.reduce((a, c) => a + Number(c.quantity), 0)}{" "}
+                      items)
                     </dt>
                     <dd className="text-sm font-medium text-gray-900">
                       ${cartTotal.toLocaleString("es-AR")}
@@ -334,28 +311,32 @@ const CartPage = () => {
                       Total
                     </dt>
                     <dd className="text-base font-medium text-gray-900">
-                      ${discountedTotal.toLocaleString("es-AR")}
+                      $
+                      {Math.round(
+                        cartTotal - cartTotal * (discountPercent / 100)
+                      ).toLocaleString("es-AR")}
                     </dd>
                   </div>
 
                   <p className="text-green-600 text-sm mt-2">Envío gratis</p>
                 </dl>
 
-                <div className="px-2 pb-4 font-medium text-green-700">
-                  <div className="flex gap-4 mb-6">
-                    <BuyNowModal
-                      addressInfo={addressInfo}
-                      setAddressInfo={setAddressInfo}
-                      buyNowFunction={buyNowFunction}
-                      errors={errors}
-                      setErrors={setErrors}
-                    />
-                    <BankTransferModal
-                      addressInfo={addressInfo}
-                      setAddressInfo={setAddressInfo}
-                      shippingCost={0}
-                    />
-                  </div>
+                {/* Botones de pago separados */}
+                <div className="px-2 pb-4 font-medium text-green-700 flex gap-4">
+                  <button
+                    onClick={pagarConDebito}
+                    className="bg-green-600 text-white px-4 py-2 rounded flex-1"
+                  >
+                    Pagar con Débito / Transferencia - $
+                    {precioDebito.toLocaleString("es-AR")}
+                  </button>
+
+                  <button
+                    onClick={pagarConCredito}
+                    className="bg-blue-600 text-white px-4 py-2 rounded flex-1"
+                  >
+                    Pagar con Crédito - ${cartTotal.toLocaleString("es-AR")}
+                  </button>
                 </div>
               </div>
             </section>

@@ -59,8 +59,8 @@ const AllProductsPage = () => {
                     </p>
 
                     {/* Precio en cuotas */}
-                    <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">
-                      ${Number(priceOriginal).toLocaleString("es-AR")} en cuotas
+                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                      ${Math.round(price * 1.1).toLocaleString("es-AR")} crédito
                     </p>
 
                     <div className="flex gap-2 mt-2">

@@ -38,8 +38,8 @@ const ProductDetails = ({
         </p>
 
         <p className="text-base text-gray-500 dark:text-gray-400">
-          ${Math.round(price * 1.1).toLocaleString("es-AR")} hasta en 12 cuotas
-          fijas
+          ${Math.round((price * 1.1 * 1.753) / 12).toLocaleString("es-AR")}{" "}
+          hasta en 12 cuotas fijas
         </p>
       </div>
 

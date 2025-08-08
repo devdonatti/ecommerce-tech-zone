@@ -7,8 +7,10 @@ const Features = () => {
         {/* Feature 1 */}
         <div className="flex flex-col items-center space-y-2">
           <CreditCard className="w-10 h-10 text-black" />
-          <h4 className="font-bold">12 CUOTAS</h4>
-          <p className="text-sm text-gray-700">Fijas</p>
+          <h4 className="font-bold">
+            3 CUOTAS SIN INTERÉS Y <br />
+            12 CUOTAS
+          </h4>
         </div>
 
         {/* Feature 2 */}
