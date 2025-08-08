@@ -67,16 +67,19 @@ const FeaturedSlider = ({ products, addCart, navigate }) => {
                     <h2 className="text-sm font-medium text-gray-800 dark:text-gray-100 truncate">
                       {title}
                     </h2>
+
                     <p className="text-xs text-[#08BC08] dark:text-gray-500 line-through">
                       ${Math.round(price * 1.25).toLocaleString("es-AR")}
                     </p>
 
-                    <p className="text-xl font-bold text-[#08BC08] dark:text-[#08BC08]">
-                      ${Math.round(price * 0.85).toLocaleString("es-AR")}
-                      <span className="text-sm font-normal text-[#08BC08] ml-1">
-                        débito o transferencia
+                    <div>
+                      <p className="text-3xl font-bold text-[#08BC08] dark:text-[#08BC08] leading-tight">
+                        ${price.toLocaleString("es-AR")}
+                      </p>
+                      <span className="block text-sm text-[#08BC08] font-medium">
+                        con débito o transferencia
                       </span>
-                    </p>
+                    </div>
 
                     <p className="text-sm text-gray-500 dark:text-gray-400">
                       ${Math.round(price * 1.1).toLocaleString("es-AR")} crédito
