@@ -74,7 +74,16 @@ const ProductInfo = () => {
   };
 
   const addCart = (item) => {
-    dispatch(addToCart({ ...item, quantity: 1 }));
+    const priceBase = Number(item.price); // Precio base (transferencia)
+    const priceCard = Math.round(priceBase * 1.1); // +10% recargo para tarjeta
+    dispatch(
+      addToCart({
+        ...item,
+        quantity: 1,
+        price: priceBase, // Precio base sin recargo
+        priceCard: priceCard, // Precio con recargo
+      })
+    );
     toast.success("Agregado al carrito");
   };
 

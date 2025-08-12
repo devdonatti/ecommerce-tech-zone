@@ -37,7 +37,17 @@ const HomePageProductCard = () => {
   const dispatch = useDispatch();
 
   const addCart = (item) => {
-    dispatch(addToCart({ ...item, quantity: 1 }));
+    const priceTransfer = Number(item.price); // precio base que viene de Firebase
+    const priceCard = Math.round(priceTransfer * 1.1); // +10% recargo
+
+    dispatch(
+      addToCart({
+        ...item,
+        quantity: 1,
+        priceCard, // guardamos el precio con recargo
+        price: priceCard, // usamos el precio con recargo para mostrar y usar en carrito
+      })
+    );
     toast.success("Agregado al carrito");
   };
 

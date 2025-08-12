@@ -148,8 +148,11 @@ const AddProductPage = () => {
             type="number"
             placeholder="Precio del producto"
             value={product.price}
-            onChange={(e) => setProduct({ ...product, price: e.target.value })}
+            onChange={(e) =>
+              setProduct({ ...product, price: Number(e.target.value) })
+            }
           />
+
           <Input
             placeholder="Imagen principal (URL)"
             value={product.productImageUrl}

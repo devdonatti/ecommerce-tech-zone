@@ -40,7 +40,7 @@ const CartPage = () => {
       const items = cartItems.map((item) => ({
         title: item.title,
         quantity: Number(item.quantity),
-        price: Number(item.price),
+        price: Number(item.priceCard ?? item.price), // precio con tarjeta si existe
         description: item.description,
         productImageUrl: item.productImageUrl,
       }));
@@ -92,8 +92,18 @@ const CartPage = () => {
 
   const cartTotal = cartItems.reduce((sum, item) => {
     const quantity = Number(item.quantity);
-    const price = Number(item.price);
+    const price = Number(item.priceCard ?? item.price);
     return sum + (isNaN(quantity) || isNaN(price) ? 0 : quantity * price);
+  }, 0);
+
+  const transferTotal = cartItems.reduce((sum, item) => {
+    const quantity = Number(item.quantity);
+    const priceWithRecargo = Number(item.price);
+    // deshacer recargo dividiendo por 1.1
+    const priceBase = priceWithRecargo / 1.1;
+    return (
+      sum + (isNaN(quantity) || isNaN(priceBase) ? 0 : quantity * priceBase)
+    );
   }, 0);
 
   const discountedTotal = discountPercent
@@ -231,7 +241,10 @@ const CartPage = () => {
                                 {item.category}
                               </p>
                               <p className="text-sm font-medium text-gray-900 mt-1">
-                                ${Number(item.price).toLocaleString("es-AR")}
+                                $
+                                {Number(
+                                  item.priceCard ?? item.price
+                                ).toLocaleString("es-AR")}
                               </p>
                             </div>
                           </div>
@@ -282,6 +295,7 @@ const CartPage = () => {
             </section>
 
             {/* Resumen */}
+            {/* Resumen */}
             <section
               aria-labelledby="summary-heading"
               className="mt-16 rounded-md bg-white lg:col-span-4 lg:mt-0 lg:p-0"
@@ -294,12 +308,24 @@ const CartPage = () => {
               </h2>
               <div>
                 <dl className="space-y-1 px-2 py-4">
+                  {/* Precio con tarjeta */}
+                  {/* Precio con tarjeta */}
                   <div className="flex items-center justify-between">
                     <dt className="text-sm text-gray-800">
                       Precio ({cartItemTotal} items)
                     </dt>
                     <dd className="text-sm font-medium text-gray-900">
                       ${cartTotal.toLocaleString("es-AR")}
+                    </dd>
+                  </div>
+
+                  {/* Precio con transferencia */}
+                  <div className="flex items-center justify-between mt-2">
+                    <dt className="text-sm text-green-600 italic">
+                      Precio transferencia 10% de descuento
+                    </dt>
+                    <dd className="text-sm font-medium text-gray-700 italic">
+                      ${transferTotal.toLocaleString("es-AR")}
                     </dd>
                   </div>
 
@@ -328,7 +354,7 @@ const CartPage = () => {
                     )}
                   </div>
 
-                  {/* Total */}
+                  {/* Total final con descuento si aplica */}
                   <div className="flex items-center justify-between border-y border-dashed py-4 mt-2">
                     <dt className="text-base font-medium text-gray-900">
                       Total
