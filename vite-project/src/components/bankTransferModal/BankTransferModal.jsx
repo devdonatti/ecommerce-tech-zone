@@ -12,7 +12,12 @@ import { Timestamp, addDoc, collection } from "firebase/firestore";
 import { fireDB } from "../../firebase/FirebaseConfig";
 import { useSelector } from "react-redux";
 
-const BankTransferModal = ({ addressInfo, setAddressInfo, shippingCost }) => {
+const BankTransferModal = ({
+  addressInfo,
+  setAddressInfo,
+  shippingCost,
+  totalTransfer, // <-- NUEVO: total por transferencia (productos + envío o 0 si retiro)
+}) => {
   const [open, setOpen] = useState(false);
   const [showCBU, setShowCBU] = useState(false);
   const [errors, setErrors] = useState({});
@@ -20,6 +25,7 @@ const BankTransferModal = ({ addressInfo, setAddressInfo, shippingCost }) => {
   const cartItems = useSelector((state) => state.cart);
   const user = JSON.parse(localStorage.getItem("users"));
 
+  // total con precios "price" (base sin recargo) -> ya lo usás como referencia
   const cartTotal = cartItems.reduce((sum, item) => {
     const quantity = Number(item.quantity);
     const price = Number(item.price);
@@ -61,7 +67,8 @@ const BankTransferModal = ({ addressInfo, setAddressInfo, shippingCost }) => {
         userid: user?.uid || "invitado",
         status: "pendiente de transferencia",
         shippingCost,
-        total: cartTotal + shippingCost,
+        // Guardamos explícitamente el total a transferir que ve el cliente
+        totalTransfer: Number(totalTransfer || 0),
         time: Timestamp.now().toMillis(),
         date: new Date().toLocaleString("es-AR", {
           month: "short",
@@ -80,9 +87,16 @@ const BankTransferModal = ({ addressInfo, setAddressInfo, shippingCost }) => {
   };
 
   const copyToClipboard = () => {
-    navigator.clipboard.writeText("0000003100029002166741");
+    navigator.clipboard.writeText("0000003100029621780498");
     toast.success("CBU copiado al portapapeles");
   };
+
+  const whatsappText = `Hola! Te envío el comprobante de la transferencia.
+
+Nombre: ${addressInfo.name}
+Total: $${Number(totalTransfer || 0).toLocaleString("es-AR")}
+
+Adjunto el comprobante a continuación.`;
 
   return (
     <>
@@ -98,8 +112,15 @@ const BankTransferModal = ({ addressInfo, setAddressInfo, shippingCost }) => {
         <DialogBody>
           {showCBU ? (
             <div className="space-y-4 text-sm">
+              <p className="font-semibold">
+                Total a transferir: $
+                {Number(totalTransfer || 0).toLocaleString("es-AR")}
+              </p>
+
+              <div className="h-px w-full bg-gray-200 my-2" />
+
               <p>
-                <strong>CBU: 0000003100029621780498</strong>{" "}
+                <strong>CBU:</strong> 0000003100029621780498{" "}
                 <button
                   onClick={copyToClipboard}
                   className="ml-2 text-blue-500 underline text-xs"
@@ -116,16 +137,12 @@ const BankTransferModal = ({ addressInfo, setAddressInfo, shippingCost }) => {
               </p>
               <a
                 href={`https://wa.me/5491154105141?text=${encodeURIComponent(
-                  `Hola! Te envío el comprobante de la transferencia.\n\nNombre: ${
-                    addressInfo.name
-                  }\nTotal: $${
-                    cartTotal + shippingCost
-                  }\n\nAdjunto el comprobante a continuación.`
+                  whatsappText
                 )}`}
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                <Button color="blue" className="mt-4">
+                <Button color="blue" className="mt-2">
                   Enviar comprobante por WhatsApp
                 </Button>
               </a>
@@ -195,6 +212,28 @@ const BankTransferModal = ({ addressInfo, setAddressInfo, shippingCost }) => {
                 className={errors.mobileNumber ? "border-red-500" : ""}
                 error={errors.mobileNumber}
               />
+
+              {/* Resumen dentro del modal */}
+              <div className="mt-2 text-sm bg-gray-50 rounded p-3">
+                <div className="flex justify-between">
+                  <span>Productos + envio :</span>
+                  <span>
+                    ${Math.round(totalTransfer).toLocaleString("es-AR")}
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Envío:</span>
+                  <span>
+                    ${Number(shippingCost || 0).toLocaleString("es-AR")}
+                  </span>
+                </div>
+                <div className="flex justify-between font-semibold border-t mt-2 pt-2">
+                  <span>Total a transferir:</span>
+                  <span>
+                    ${Number(totalTransfer || 0).toLocaleString("es-AR")}
+                  </span>
+                </div>
+              </div>
             </div>
           )}
         </DialogBody>

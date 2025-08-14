@@ -43,11 +43,33 @@ const OrderDetail = () => {
         status: newStatus,
       });
       toast.success("Estado actualizado");
-      getAllOrderFunction(); // opcional si querés refrescar después de cambiar
+      getAllOrderFunction();
     } catch (error) {
       console.error("Error al cambiar estado:", error);
       toast.error("Error al actualizar estado");
     }
+  };
+
+  // Helpers UI
+  const renderDeliveryBadge = (order) => {
+    const isPickup = !!order.pickupCarapachay;
+    const cost = Number(order.shippingCost || 0);
+    const cp = order?.addressInfo?.pincode;
+
+    if (isPickup) {
+      return (
+        <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold bg-blue-900 text-blue-200 border border-blue-600">
+          Retiro Carapachay (gratis)
+        </span>
+      );
+    }
+
+    return (
+      <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold bg-green-900 text-green-200 border border-green-600">
+        Envío ${cost.toLocaleString("es-AR")}
+        {cp ? ` — CP: ${cp}` : ""}
+      </span>
+    );
   };
 
   return (
@@ -79,13 +101,15 @@ const OrderDetail = () => {
       >
         <style>{`div::-webkit-scrollbar { display: none; }`}</style>
 
-        <table className="w-full border-collapse border border-fuchsia-700 min-w-[900px]">
+        {/* +1 columna: Entrega */}
+        <table className="w-full border-collapse border border-fuchsia-700 min-w-[1000px]">
           <thead>
             <tr className="bg-black text-cyan-400 text-sm uppercase border-b border-fuchsia-600">
               <th className="px-4 py-2 border border-fuchsia-600">#</th>
               <th className="px-4 py-2 border border-fuchsia-600">Orden ID</th>
               <th className="px-4 py-2 border border-fuchsia-600">Cliente</th>
               <th className="px-4 py-2 border border-fuchsia-600">Estado</th>
+              <th className="px-4 py-2 border border-fuchsia-600">Entrega</th>
               <th className="px-4 py-2 border border-fuchsia-600">Total</th>
               <th className="px-4 py-2 border border-fuchsia-600">Día</th>
               <th className="px-4 py-2 border border-fuchsia-600">Acción</th>
@@ -94,10 +118,17 @@ const OrderDetail = () => {
 
           <tbody>
             {getAllOrder.map((order, index) => {
-              const total = order.cartItems.reduce(
-                (acc, item) => acc + item.price * item.quantity,
-                0
-              );
+              // si guardaste finalTotal en la orden, úsalo; si no, calculo de respaldo
+              const computedItemsTotal =
+                order.cartItems?.reduce(
+                  (acc, item) =>
+                    acc + Number(item.price || 0) * Number(item.quantity || 0),
+                  0
+                ) || 0;
+
+              const totalToShow = Number.isFinite(Number(order.finalTotal))
+                ? Number(order.finalTotal)
+                : computedItemsTotal + Number(order.shippingCost || 0);
 
               return (
                 <Fragment key={order.id}>
@@ -114,7 +145,7 @@ const OrderDetail = () => {
                       {order.id}
                     </td>
                     <td className="px-4 py-2 border border-fuchsia-600">
-                      {order.addressInfo.name}
+                      {order.addressInfo?.name}
                     </td>
                     <td className="px-4 py-2 border border-fuchsia-600 text-center">
                       <select
@@ -123,6 +154,7 @@ const OrderDetail = () => {
                           handleStatusChange(order.id, e.target.value)
                         }
                         className="bg-black text-green-400 font-semibold text-sm border border-fuchsia-700 rounded px-2 py-1 focus:outline-none"
+                        onClick={(e) => e.stopPropagation()}
                       >
                         <option value="pending">Pendiente</option>
                         <option value="confirmed">Confirmada</option>
@@ -131,8 +163,14 @@ const OrderDetail = () => {
                         <option value="cancelled">Cancelado</option>
                       </select>
                     </td>
+
+                    {/* NUEVO: columna Entrega */}
                     <td className="px-4 py-2 border border-fuchsia-600">
-                      ${total}
+                      {renderDeliveryBadge(order)}
+                    </td>
+
+                    <td className="px-4 py-2 border border-fuchsia-600">
+                      ${totalToShow.toLocaleString("es-AR")}
                     </td>
                     <td className="px-4 py-2 border border-fuchsia-600 text-center">
                       {order.date}
@@ -149,46 +187,46 @@ const OrderDetail = () => {
                   </tr>
 
                   {openOrder === order.id && (
+                    // Nota: colSpan = columnas del thead (8)
                     <tr className="bg-[#111] border-b border-fuchsia-700">
-                      <td colSpan={7} className="px-6 py-4 space-y-6">
-                        {/* Datos del cliente */}
+                      <td colSpan={8} className="px-6 py-4 space-y-6">
                         {/* Datos del cliente */}
                         <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4 text-sm text-white">
                           <div>
                             <span className="font-bold text-cyan-400">
                               Nombre:
                             </span>{" "}
-                            {order.addressInfo.name}
+                            {order.addressInfo?.name}
                           </div>
                           <div>
                             <span className="font-bold text-cyan-400">
                               Dirección:
                             </span>{" "}
-                            {order.addressInfo.address}
+                            {order.addressInfo?.address}
                           </div>
                           <div>
                             <span className="font-bold text-cyan-400">
                               Localidad:
                             </span>{" "}
-                            {order.addressInfo.localidad || "—"}
+                            {order.addressInfo?.localidad || "—"}
                           </div>
                           <div>
                             <span className="font-bold text-cyan-400">
                               Provincia:
                             </span>{" "}
-                            {order.addressInfo.provincia || "—"}
+                            {order.addressInfo?.provincia || "—"}
                           </div>
                           <div>
                             <span className="font-bold text-cyan-400">
                               Código Postal:
                             </span>{" "}
-                            {order.addressInfo.pincode}
+                            {order.addressInfo?.pincode}
                           </div>
                           <div>
                             <span className="font-bold text-cyan-400">
                               Teléfono:
                             </span>{" "}
-                            {order.addressInfo.mobileNumber}
+                            {order.addressInfo?.mobileNumber}
                           </div>
                           <div>
                             <span className="font-bold text-cyan-400">
@@ -198,13 +236,54 @@ const OrderDetail = () => {
                           </div>
                         </div>
 
+                        {/* Entrega */}
+                        <div className="border border-cyan-700 rounded-md p-4 bg-black/40">
+                          <h3 className="text-cyan-400 font-semibold mb-2">
+                            Entrega
+                          </h3>
+                          {order.pickupCarapachay ? (
+                            <p className="text-sm">
+                              <span className="font-semibold text-blue-300">
+                                Retiro en Carapachay:
+                              </span>{" "}
+                              Gratis
+                            </p>
+                          ) : (
+                            <>
+                              <p className="text-sm">
+                                <span className="font-semibold text-green-300">
+                                  Tipo:
+                                </span>{" "}
+                                Envío
+                              </p>
+                              <p className="text-sm">
+                                <span className="font-semibold text-green-300">
+                                  Costo:
+                                </span>{" "}
+                                $
+                                {Number(order.shippingCost || 0).toLocaleString(
+                                  "es-AR"
+                                )}
+                              </p>
+                              {order.addressInfo?.pincode && (
+                                <p className="text-sm">
+                                  <span className="font-semibold text-green-300">
+                                    CP:
+                                  </span>{" "}
+                                  {order.addressInfo.pincode}
+                                </p>
+                              )}
+                            </>
+                          )}
+                        </div>
+
                         {/* Productos */}
                         <div>
                           <h3 className="text-cyan-400 font-semibold mb-2">
                             Productos:
                           </h3>
                           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-                            {order.cartItems.map((item, idx) => (
+                            {order.cartItems?.map((item, idx) => (
                               <div
                                 key={idx}
                                 className="border border-cyan-600 rounded-md p-4 bg-black text-white"
@@ -225,7 +304,8 @@ const OrderDetail = () => {
                                   Cantidad: {item.quantity}
                                 </p>
                                 <p className="text-xs font-semibold text-fuchsia-400">
-                                  Subtotal: ${item.price * item.quantity}
+                                  Subtotal: $
+                                  {Number(item.price) * Number(item.quantity)}
                                 </p>
                               </div>
                             ))}

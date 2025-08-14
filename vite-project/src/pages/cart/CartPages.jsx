@@ -36,7 +36,7 @@ const CartPage = () => {
   const [shippingCost, setShippingCost] = useState(0);
   const [shippingZones, setShippingZones] = useState([]);
 
-  // NUEVO: retiro en Carapachay (gratis)
+  // Retiro en Carapachay (gratis)
   const [pickupCarapachay, setPickupCarapachay] = useState(false);
 
   // Traer zonas de envío desde Firestore
@@ -142,14 +142,14 @@ const CartPage = () => {
     localStorage.setItem("cart", JSON.stringify(cartItems));
   }, [cartItems]);
 
-  // NUEVO: si eligen retiro, ponemos envío 0 y limpiamos CP
+  // Si eligen retiro, envío 0
   useEffect(() => {
     if (pickupCarapachay) {
       setShippingCost(0);
     }
   }, [pickupCarapachay]);
 
-  // Crear preferencia de pago (agrega envío como ítem salvo retiro)
+  // Crear preferencia de pago (NO se agrega "Envío" como item; se manda en shippingCost)
   const createPreference = async () => {
     try {
       const items = cartItems.map((item) => ({
@@ -160,14 +160,10 @@ const CartPage = () => {
         productImageUrl: item.productImageUrl,
       }));
 
-      // 🚫 No agregamos el item "Envío" acá
-      // if (!pickupCarapachay && Number(shippingCost) > 0) { items.push(...); }
-
       const response = await axios.post(
         "https://ecommerce-tech-zone-q2e8-git-main-devdonattis-projects.vercel.app/api/create_preference_cart",
         {
           cartItems: items,
-          // Dejamos que el backend lo sume; si es retiro, va 0
           shippingCost: pickupCarapachay ? 0 : Number(shippingCost),
         }
       );
@@ -230,9 +226,14 @@ const CartPage = () => {
     ? Math.round(cartTotal - cartTotal * (discountPercent / 100))
     : cartTotal;
 
-  // NUEVO: solo suma envío si NO es retiro
+  // Total final (vista general) suma envío si no es retiro
   const finalTotal =
     discountedTotal + (pickupCarapachay ? 0 : shippingCost || 0);
+
+  // NUEVO: total por transferencia incluyendo envío (o 0 si retiro)
+  const transferFinal = Math.round(
+    transferTotal + (pickupCarapachay ? 0 : Number(shippingCost) || 0)
+  );
 
   const user = JSON.parse(localStorage.getItem("users"));
 
@@ -278,7 +279,6 @@ const CartPage = () => {
 
   // Comprar ahora (validación obligatoria)
   const buyNowFunction = async () => {
-    // Debe haber envío calculado o retiro seleccionado
     const canCheckout = pickupCarapachay || Number(shippingCost) > 0;
     if (!canCheckout) {
       toast.error(
@@ -313,7 +313,7 @@ const CartPage = () => {
       userid: user?.uid || "invitado",
       status: "confirmed",
       shippingCost: pickupCarapachay ? 0 : shippingCost,
-      pickupCarapachay, // guardamos la elección
+      pickupCarapachay,
       subtotal: cartTotal,
       discountPercent,
       finalTotal,
@@ -451,17 +451,39 @@ const CartPage = () => {
                     </dd>
                   </div>
 
-                  {/* Precio con transferencia (informativo) */}
-                  <div className="flex items-center justify-between mt-2">
-                    <dt className="text-sm text-green-600 italic">
-                      Precio transferencia 10% de descuento
-                    </dt>
-                    <dd className="text-sm font-medium text-gray-700 italic">
-                      ${transferTotal.toLocaleString("es-AR")}
-                    </dd>
+                  {/* Precio con transferencia + total con envío */}
+                  <div className="flex flex-col gap-1 mt-2">
+                    <div className="flex items-center justify-between">
+                      <dt className="text-sm text-green-600 italic">
+                        Precio transferencia 10% de descuento
+                      </dt>
+                      <dd className="text-sm font-medium text-gray-700 italic">
+                        ${transferTotal.toLocaleString("es-AR")}
+                      </dd>
+                    </div>
+
+                    {pickupCarapachay || Number(shippingCost) > 0 ? (
+                      <div className="flex items-center justify-between">
+                        <dt className="text-sm text-green-700">
+                          Transferencia{" "}
+                          {pickupCarapachay ? "(retiro)" : "+ envío"}
+                        </dt>
+                        <dd className="text-sm font-semibold text-green-700">
+                          ${transferFinal.toLocaleString("es-AR")}
+                        </dd>
+                      </div>
+                    ) : (
+                      <div className="flex items-center justify-between">
+                        <dt className="text-xs text-amber-600">
+                          Elegí retiro o calculá el envío para ver el total por
+                          transferencia
+                        </dt>
+                        <dd />
+                      </div>
+                    )}
                   </div>
 
-                  {/* Descuento aplicado */}
+                  {/* Descuento aplicado (si hay) */}
                   {discountPercent > 0 && (
                     <div className="flex items-center justify-between mt-2">
                       <dt className="text-sm text-green-600">
@@ -598,6 +620,7 @@ const CartPage = () => {
                           addressInfo={addressInfo}
                           setAddressInfo={setAddressInfo}
                           shippingCost={pickupCarapachay ? 0 : shippingCost}
+                          totalTransfer={transferFinal} // <-- NUEVO
                         />
                       </div>
                     ) : (
