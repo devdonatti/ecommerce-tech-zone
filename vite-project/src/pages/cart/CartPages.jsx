@@ -160,21 +160,14 @@ const CartPage = () => {
         productImageUrl: item.productImageUrl,
       }));
 
-      // Solo agregamos envío si NO es retiro
-      if (!pickupCarapachay && Number(shippingCost) > 0) {
-        items.push({
-          title: "Envío",
-          quantity: 1,
-          price: Number(shippingCost),
-          description: "Costo de envío",
-          productImageUrl: null,
-        });
-      }
+      // 🚫 No agregamos el item "Envío" acá
+      // if (!pickupCarapachay && Number(shippingCost) > 0) { items.push(...); }
 
       const response = await axios.post(
         "https://ecommerce-tech-zone-q2e8-git-main-devdonattis-projects.vercel.app/api/create_preference_cart",
         {
           cartItems: items,
+          // Dejamos que el backend lo sume; si es retiro, va 0
           shippingCost: pickupCarapachay ? 0 : Number(shippingCost),
         }
       );
