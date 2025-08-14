@@ -9,7 +9,7 @@ const Features = () => {
           <CreditCard className="w-10 h-10 text-black" />
           <h4 className="font-bold">
             3 CUOTAS SIN INTERÉS Y <br />
-            12 CUOTAS
+            12 CUOTAS FIJAS
           </h4>
         </div>
 
