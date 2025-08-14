@@ -16,7 +16,7 @@ const Features = () => {
         {/* Feature 2 */}
         <div className="flex flex-col items-center space-y-2">
           <Truck className="w-10 h-10 text-black" />
-          <h4 className="font-bold">¡ENVÍOS GRATIS A TODO EL PAÍS!</h4>
+          <h4 className="font-bold">¡ENVÍOS A TODO EL PAÍS!</h4>
           <p className="text-sm text-gray-700">
             Antes de las 13hs. Envíos en el día.
           </p>

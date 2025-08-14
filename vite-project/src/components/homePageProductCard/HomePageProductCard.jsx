@@ -112,12 +112,16 @@ const HomePageProductCard = () => {
                       </p>
 
                       {/* Precio principal */}
-                      <p className="text-xl font-bold text-[#08BC08] dark:text-[#08BC08]">
-                        ${priceOriginal.toLocaleString("es-AR")}
-                        <span className="text-sm text-[#08BC08] font-medium ml-2">
-                          con débito o transferencia
-                        </span>
-                      </p>
+
+                      {/* Contenedor de precios */}
+                      <div className="min-h-[50px] flex flex-col justify-center">
+                        <p className="text-xl font-bold text-[#08BC08] dark:text-[#08BC08]">
+                          ${priceOriginal.toLocaleString("es-AR")}
+                          <span className="text-sm text-[#08BC08] font-medium ml-2">
+                            con débito o transferencia
+                          </span>
+                        </p>
+                      </div>
 
                       {/* Precio en cuotas */}
                       <p className="text-sm text-gray-500 dark:text-gray-400">
