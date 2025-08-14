@@ -24,34 +24,162 @@ import axios from "axios";
 
 const CartPage = () => {
   const [errors, setErrors] = useState({});
-  const [shippingCost, setShippingCost] = useState(0); // Envío gratis por defecto
   const cartItems = useSelector((state) => state.cart);
   const dispatch = useDispatch();
 
+  // Descuento
   const [discountCode, setDiscountCode] = useState("");
   const [discountPercent, setDiscountPercent] = useState(0);
 
+  // Envío
+  const [zipCode, setZipCode] = useState("");
+  const [shippingCost, setShippingCost] = useState(0);
+  const [shippingZones, setShippingZones] = useState([]);
+
+  // NUEVO: retiro en Carapachay (gratis)
+  const [pickupCarapachay, setPickupCarapachay] = useState(false);
+
+  // Traer zonas de envío desde Firestore
+  useEffect(() => {
+    const fetchShippingZones = async () => {
+      try {
+        const snapshot = await getDocs(collection(fireDB, "shippingZones"));
+        const zones = snapshot.docs.map((doc) => doc.data());
+        setShippingZones(zones);
+      } catch (e) {
+        console.error(e);
+        toast.error("No se pudieron cargar las zonas de envío");
+      }
+    };
+    fetchShippingZones();
+  }, []);
+
+  // Helpers CABA/GBA
+  const isCABA = (cp) => Number.isFinite(cp) && cp >= 1000 && cp <= 1499;
+
+  const getGbaCost = (gba, cp) => {
+    if (!gba) return null;
+    const rangos = Array.isArray(gba.rangos) ? gba.rangos : null;
+    if (!rangos || rangos.length === 0) return null;
+
+    const sorted = [...rangos]
+      .map(Number)
+      .filter(Number.isFinite)
+      .sort((a, b) => a - b);
+    if (sorted.length < 2) return null;
+
+    for (let i = 0; i < sorted.length - 1; i++) {
+      const min = sorted[i];
+      const max = sorted[i + 1];
+      if (cp >= min && cp < max) {
+        if (i === 0 && Number.isFinite(Number(gba.franja1)))
+          return Number(gba.franja1);
+        if (i === 1 && Number.isFinite(Number(gba.franja2)))
+          return Number(gba.franja2);
+        if (i >= 2 && Number.isFinite(Number(gba.franja3)))
+          return Number(gba.franja3);
+        return null;
+      }
+    }
+    return null;
+  };
+
+  // Calcular envío
+  const calculateShipping = (zipInput) => {
+    const cp = Number(zipInput);
+    if (!Number.isFinite(cp)) {
+      toast.error("Ingresá un código postal numérico");
+      return;
+    }
+
+    if (!shippingZones || !shippingZones[0]) {
+      toast.error("Zonas de envío no disponibles todavía");
+      return;
+    }
+
+    const zones = shippingZones[0]; // { CABA, GBA, Interior }
+
+    // Si hay retiro, ignoramos cálculo
+    if (pickupCarapachay) {
+      toast("Tenés seleccionado retiro en Carapachay (sin envío).");
+      return;
+    }
+
+    // 1) CABA
+    if (zones.CABA && isCABA(cp)) {
+      const price = Number(zones.CABA.franja1 ?? zones.CABA.price);
+      if (Number.isFinite(price)) {
+        setShippingCost(price);
+        toast.success(`Envío CABA: $${price.toLocaleString("es-AR")}`);
+        return;
+      }
+    }
+
+    // 2) GBA
+    const gbaCost = getGbaCost(zones.GBA, cp);
+    if (Number.isFinite(gbaCost)) {
+      setShippingCost(gbaCost);
+      toast.success(`Envío GBA: $${gbaCost.toLocaleString("es-AR")}`);
+      return;
+    }
+
+    // 3) Interior
+    if (zones.Interior) {
+      const interior = Number(zones.Interior.franja1 ?? zones.Interior.price);
+      if (Number.isFinite(interior)) {
+        setShippingCost(interior);
+        toast.success(`Envío Interior: $${interior.toLocaleString("es-AR")}`);
+        return;
+      }
+    }
+
+    setShippingCost(0);
+    toast.error("No pudimos calcular el envío para ese código postal");
+  };
+
+  // Guardar carrito en localStorage
   useEffect(() => {
     localStorage.setItem("cart", JSON.stringify(cartItems));
   }, [cartItems]);
 
+  // NUEVO: si eligen retiro, ponemos envío 0 y limpiamos CP
+  useEffect(() => {
+    if (pickupCarapachay) {
+      setShippingCost(0);
+    }
+  }, [pickupCarapachay]);
+
+  // Crear preferencia de pago (agrega envío como ítem salvo retiro)
   const createPreference = async () => {
     try {
       const items = cartItems.map((item) => ({
         title: item.title,
         quantity: Number(item.quantity),
-        price: Number(item.priceCard ?? item.price), // precio con tarjeta si existe
+        price: Number(item.priceCard ?? item.price),
         description: item.description,
         productImageUrl: item.productImageUrl,
       }));
 
+      // Solo agregamos envío si NO es retiro
+      if (!pickupCarapachay && Number(shippingCost) > 0) {
+        items.push({
+          title: "Envío",
+          quantity: 1,
+          price: Number(shippingCost),
+          description: "Costo de envío",
+          productImageUrl: null,
+        });
+      }
+
       const response = await axios.post(
         "https://ecommerce-tech-zone-q2e8-git-main-devdonattis-projects.vercel.app/api/create_preference_cart",
-        { cartItems: items, shippingCost }
+        {
+          cartItems: items,
+          shippingCost: pickupCarapachay ? 0 : Number(shippingCost),
+        }
       );
 
       const { init_point } = response.data;
-
       if (!init_point) throw new Error("No se recibió el link de pago");
       return init_point;
     } catch (error) {
@@ -99,7 +227,6 @@ const CartPage = () => {
   const transferTotal = cartItems.reduce((sum, item) => {
     const quantity = Number(item.quantity);
     const priceWithRecargo = Number(item.price);
-    // deshacer recargo dividiendo por 1.1
     const priceBase = priceWithRecargo / 1.1;
     return (
       sum + (isNaN(quantity) || isNaN(priceBase) ? 0 : quantity * priceBase)
@@ -110,9 +237,12 @@ const CartPage = () => {
     ? Math.round(cartTotal - cartTotal * (discountPercent / 100))
     : cartTotal;
 
+  // NUEVO: solo suma envío si NO es retiro
+  const finalTotal =
+    discountedTotal + (pickupCarapachay ? 0 : shippingCost || 0);
+
   const user = JSON.parse(localStorage.getItem("users"));
 
-  // addressInfo inicial
   const [addressInfo, setAddressInfo] = useState({
     name: "",
     address: "",
@@ -128,7 +258,7 @@ const CartPage = () => {
     }),
   });
 
-  // Aplicar código de descuento
+  // Código de descuento
   const applyDiscountCode = async () => {
     if (!discountCode) return toast.error("Ingresá un código");
 
@@ -143,8 +273,6 @@ const CartPage = () => {
     }
 
     const discountData = snapshot.docs[0].data();
-
-    // Validaciones
     const today = new Date();
     const expiration = new Date(discountData.expiresAt);
 
@@ -155,7 +283,17 @@ const CartPage = () => {
     toast.success(`Código aplicado: ${discountData.discount}%`);
   };
 
+  // Comprar ahora (validación obligatoria)
   const buyNowFunction = async () => {
+    // Debe haber envío calculado o retiro seleccionado
+    const canCheckout = pickupCarapachay || Number(shippingCost) > 0;
+    if (!canCheckout) {
+      toast.error(
+        "Elegí envío o tildá 'Retiro gratis en Carapachay' para continuar."
+      );
+      return;
+    }
+
     const nameRegex = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/;
     const addressRegex = /^[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ\s,.-]+$/;
     const pincodeRegex = /^[0-9]{4,10}$/;
@@ -171,7 +309,6 @@ const CartPage = () => {
     };
 
     setErrors(newErrors);
-
     if (Object.values(newErrors).some((error) => error)) {
       return toast.error("Completá los campos correctamente");
     }
@@ -182,10 +319,11 @@ const CartPage = () => {
       email: user?.email || "invitado",
       userid: user?.uid || "invitado",
       status: "confirmed",
-      shippingCost,
+      shippingCost: pickupCarapachay ? 0 : shippingCost,
+      pickupCarapachay, // guardamos la elección
       subtotal: cartTotal,
       discountPercent,
-      finalTotal: discountedTotal,
+      finalTotal,
       time: Timestamp.now().toMillis(),
       date: new Date().toLocaleString("es-AR", {
         month: "short",
@@ -203,6 +341,9 @@ const CartPage = () => {
       toast.error("Error al crear la orden");
     }
   };
+
+  // Condición global para habilitar compra
+  const canCheckout = pickupCarapachay || Number(shippingCost) > 0;
 
   return (
     <Layout>
@@ -295,7 +436,6 @@ const CartPage = () => {
             </section>
 
             {/* Resumen */}
-            {/* Resumen */}
             <section
               aria-labelledby="summary-heading"
               className="mt-16 rounded-md bg-white lg:col-span-4 lg:mt-0 lg:p-0"
@@ -308,18 +448,17 @@ const CartPage = () => {
               </h2>
               <div>
                 <dl className="space-y-1 px-2 py-4">
-                  {/* Precio con tarjeta */}
-                  {/* Precio con tarjeta */}
+                  {/* Subtotal */}
                   <div className="flex items-center justify-between">
                     <dt className="text-sm text-gray-800">
-                      Precio ({cartItemTotal} items)
+                      Subtotal ({cartItemTotal} items)
                     </dt>
                     <dd className="text-sm font-medium text-gray-900">
                       ${cartTotal.toLocaleString("es-AR")}
                     </dd>
                   </div>
 
-                  {/* Precio con transferencia */}
+                  {/* Precio con transferencia (informativo) */}
                   <div className="flex items-center justify-between mt-2">
                     <dt className="text-sm text-green-600 italic">
                       Precio transferencia 10% de descuento
@@ -329,7 +468,20 @@ const CartPage = () => {
                     </dd>
                   </div>
 
-                  {/* Input código de descuento */}
+                  {/* Descuento aplicado */}
+                  {discountPercent > 0 && (
+                    <div className="flex items-center justify-between mt-2">
+                      <dt className="text-sm text-green-600">
+                        Descuento ({discountPercent}%)
+                      </dt>
+                      <dd className="text-sm font-medium text-green-700">
+                        -{" "}
+                        {(cartTotal - discountedTotal).toLocaleString("es-AR")}
+                      </dd>
+                    </div>
+                  )}
+
+                  {/* Código de descuento */}
                   <div className="px-2 py-2">
                     <div className="flex gap-2">
                       <input
@@ -354,33 +506,121 @@ const CartPage = () => {
                     )}
                   </div>
 
-                  {/* Total final con descuento si aplica */}
+                  {/* Cálculo de envío */}
+                  <div className="px-2 py-2 space-y-3">
+                    <div className="flex gap-2">
+                      <input
+                        type="text"
+                        placeholder="Código Postal"
+                        value={zipCode}
+                        onChange={(e) => setZipCode(e.target.value)}
+                        className="flex-1 px-3 py-2 border rounded-md text-sm"
+                        disabled={pickupCarapachay}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const parsed = Number(zipCode);
+                          if (Number.isNaN(parsed)) {
+                            toast.error("Ingresá un código postal válido");
+                            return;
+                          }
+                          calculateShipping(parsed);
+                        }}
+                        className="bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded-md text-sm"
+                        disabled={pickupCarapachay}
+                      >
+                        Calcular envío
+                      </button>
+                    </div>
+
+                    {/* Checkbox Retiro */}
+                    <label className="flex items-center gap-2 text-sm">
+                      <input
+                        type="checkbox"
+                        checked={pickupCarapachay}
+                        onChange={(e) => {
+                          setPickupCarapachay(e.target.checked);
+                          if (e.target.checked) {
+                            setShippingCost(0);
+                          }
+                        }}
+                      />
+                      Retiro gratis en zona Carapachay
+                    </label>
+
+                    {pickupCarapachay ? (
+                      <p className="text-blue-600 text-sm">
+                        ✅ Retiro en Carapachay seleccionado (sin costo de
+                        envío)
+                      </p>
+                    ) : Number(shippingCost) > 0 ? (
+                      <p className="text-green-600 text-sm">
+                        ✅ Envío: $
+                        {Number(shippingCost).toLocaleString("es-AR")}
+                      </p>
+                    ) : (
+                      <p className="text-amber-600 text-sm">
+                        ⚠️ Elegí retiro en Carapachay o calculá el envío para
+                        continuar.
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Envío (desglosado) */}
+                  <div className="flex items-center justify-between">
+                    <dt className="text-sm text-gray-800">Envío</dt>
+                    <dd className="text-sm font-medium text-gray-900">
+                      $
+                      {Number(
+                        pickupCarapachay ? 0 : shippingCost || 0
+                      ).toLocaleString("es-AR")}
+                    </dd>
+                  </div>
+
+                  {/* Total final */}
                   <div className="flex items-center justify-between border-y border-dashed py-4 mt-2">
                     <dt className="text-base font-medium text-gray-900">
                       Total
                     </dt>
                     <dd className="text-base font-medium text-gray-900">
-                      ${discountedTotal.toLocaleString("es-AR")}
+                      ${finalTotal.toLocaleString("es-AR")}
                     </dd>
                   </div>
-
-                  <p className="text-green-600 text-sm mt-2">Envío gratis</p>
                 </dl>
 
                 <div className="px-2 pb-4 font-medium text-green-700">
-                  <div className="flex gap-4 mb-6">
-                    <BuyNowModal
-                      addressInfo={addressInfo}
-                      setAddressInfo={setAddressInfo}
-                      buyNowFunction={buyNowFunction}
-                      errors={errors}
-                      setErrors={setErrors}
-                    />
-                    <BankTransferModal
-                      addressInfo={addressInfo}
-                      setAddressInfo={setAddressInfo}
-                      shippingCost={0}
-                    />
+                  <div className="flex flex-col gap-3 mb-6">
+                    {/* Botones de compra bloqueados si no hay método */}
+                    {canCheckout ? (
+                      <div className="flex gap-4">
+                        <BuyNowModal
+                          addressInfo={addressInfo}
+                          setAddressInfo={setAddressInfo}
+                          buyNowFunction={buyNowFunction}
+                          errors={errors}
+                          setErrors={setErrors}
+                        />
+                        <BankTransferModal
+                          addressInfo={addressInfo}
+                          setAddressInfo={setAddressInfo}
+                          shippingCost={pickupCarapachay ? 0 : shippingCost}
+                        />
+                      </div>
+                    ) : (
+                      <>
+                        <button
+                          type="button"
+                          disabled
+                          className="opacity-60 cursor-not-allowed bg-gray-300 text-gray-600 px-4 py-2 rounded-md"
+                        >
+                          Comprar (bloqueado)
+                        </button>
+                        <span className="text-sm text-amber-600">
+                          Primero elegí retiro en Carapachay o calculá el envío.
+                        </span>
+                      </>
+                    )}
                   </div>
                 </div>
               </div>
